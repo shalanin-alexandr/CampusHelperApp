@@ -25,6 +25,15 @@ def normalize_day(day):
 def normalize_pair(p):
     return str(p).split("/")[0].strip() if p else ""
 
+def is_pair_match(excel_pair, doc_pair):
+    if not excel_pair or not doc_pair:
+        return False
+    base_excel = normalize_pair(excel_pair)
+    base_doc = normalize_pair(doc_pair)
+    return base_excel == base_doc or base_excel in base_doc or base_doc in base_excel
+
+
+
 def merge_schedules(excel_data, doc_data):
     merged = {
         "group": excel_data["group"],
@@ -40,12 +49,21 @@ def merge_schedules(excel_data, doc_data):
         room = lesson.get("room", "")
         subject = lesson.get("subject", "")
 
+        def is_pair_match(excel_pair, doc_pair):
+            if not excel_pair or not doc_pair:
+                return False
+            base_excel = normalize_pair(excel_pair)
+            base_doc = normalize_pair(doc_pair)
+            return base_excel == base_doc or base_excel in base_doc or base_doc in base_excel
+
         replacement = next(
             (r for r in replacements
-             if normalize_pair(r.get("pair")) == normalize_pair(pair_number)
-             and normalize_day(r.get("day")) == normalize_day(day)),
-            None
-        )
+            if is_pair_match(pair_number, r.get("pair"))
+            and normalize_day(r.get("day")) == normalize_day(day)),
+        None
+)
+
+
 
         display_pair = pair_number
         if pair_number and pair_number.endswith("/1"):
@@ -62,11 +80,12 @@ def merge_schedules(excel_data, doc_data):
             merged["schedule"].append({
                 "day": day,
                 "time": time,
-                "pair": display_pair,
+                "pair": replacement.get("pair", display_pair),  
                 "room": replacement.get("room", room),
                 "subject": replacement["to"].get("subject") or subject,
                 "replaced_subject": subject
             })
+
         else:
             merged["schedule"].append({
                 "day": day,
@@ -85,7 +104,7 @@ def merge_schedules(excel_data, doc_data):
 if __name__ == '__main__':
     EXCEL_URL = "http://www.bobruisk.belstu.by/uploads/b1/s/8/648/basic/117/614/Raspisanie_uchebnyih_zanyatiy_na_2025-2026_uch.god_1_semestr.xlsx?t=1756801696"
     DOC_PAGE_URL = "http://www.bobruisk.belstu.by/dnevnoe-otdelenie/raspisanie-zanyatiy-i-zvonkov-zamenyi"
-    MY_GROUP = "РС02-23"
+    MY_GROUP = "РС02-24"
 
     excel_schedule = get_excel_schedule(EXCEL_URL, MY_GROUP)
 

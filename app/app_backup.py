@@ -289,6 +289,21 @@ def get_schedule():
 
     return jsonify(all_schedules)
 
+def print_banner():
+    banner = r"""
+   ____                                _    _       _             
+  / ___|__ _ _ __ ___  ___ _ __   ___| | _| |_ ___| |__   ___ _ __ 
+ | |   / _` | '__/ __|/ _ \ '_ \ / _ \ |/ / __/ __| '_ \ / _ \ '__|
+ | |__| (_| | |  \__ \  __/ | | |  __/   <| || (__| | | |  __/ |   
+  \____\__,_|_|  |___/\___|_| |_|\___|_|\_\\__\___|_| |_|\___|_|   
+
+    Campus Helper Server is now running...
+    """
+    print(banner)
 
 if __name__ == '__main__':
+    print_banner()
     app.run(debug=True)
+
+
+
