@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Управление событиями</title>
+  <style>
+    body { font-family: sans-serif; background: #f4f6f8; padding: 2em; max-width: 700px; margin: auto; }
+    h1 { text-align: center; margin-bottom: 2em; }
+    .top-bar { display: flex; justify-content: space-between; margin-bottom: 2em; }
+    .event-list { list-style: none; padding: 0; }
+    .event-item {
+      background: white;
+      padding: 1em;
+      margin-bottom: 1em;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .event-info {
+      flex-grow: 1;
+    }
+    .event-actions a {
+      margin-left: 1em;
+      color: #0077cc;
+      text-decoration: none;
+    }
+    .event-actions a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>📅 Управление событиями</h1>
+
+  <div class="top-bar">
+    <a href="/admin-panel">← Назад</a>
+    <a href="/admin-panel/create-event">➕ Добавить событие</a>
+  </div>
+
+  <ul class="event-list">
+    {% for event in events|reverse %}
+      <li class="event-item">
+        <div class="event-info">
+          <strong>{{ event.title }}</strong> — {{ event.date }}
+        </div>
+        <div class="event-actions">
+          <a href="/event/{{ event.id }}">🔍</a>
+          <a href="/admin-panel/delete-event/{{ event.id }}">🗑️</a>
+        </div>
+      </li>
+    {% else %}
+      <li>События недоступны. Возможно, их пока ещё нет!</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>

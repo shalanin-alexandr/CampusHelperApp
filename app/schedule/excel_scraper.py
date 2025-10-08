@@ -6,12 +6,6 @@ from collections import defaultdict, Counter
 from datetime import datetime, timedelta
 import re
 
-
-
-
-
-
-
 def find_group_column(sheet, group_name):
     for row in sheet.iter_rows(min_row=1, max_row=24):
         for cell in row:
@@ -87,7 +81,6 @@ def get_excel_schedule(url, group_name):
                 clean_time = " ".join(parts[1:]) if len(parts) > 1 else current_time
 
             subject_cell = row_values[column_index] if column_index < len(row_values) else None
-            teacher_cell = row_values[column_index - 1] if column_index - 1 < len(row_values) else None
             room_cell = row_values[column_index + 1] if column_index + 1 < len(row_values) else None
 
             if subject_cell:
@@ -103,12 +96,10 @@ def get_excel_schedule(url, group_name):
                     "time": clean_time,
                     "pair": indexed_pair,
                     "room": str(room_cell).strip() if room_cell else "",
-                    "subject": str(subject_cell).strip() if subject_cell else "",
-                    "teacher": str(teacher_cell).strip() if teacher_cell else ""
+                    "subject": str(subject_cell).strip() if subject_cell else ""
                 }
                 schedule_data["schedule"].append(pair_info)
 
-        # Постобработка: делим время, если в паре два предмета
         pair_occurrences = Counter((p["day"], p["pair"].split("/")[0]) for p in schedule_data["schedule"] if p.get("pair"))
         interval_cache = {}
 
@@ -122,7 +113,7 @@ def get_excel_schedule(url, group_name):
             key = (entry["day"], base_pair)
 
             if pair_occurrences[key] == 1:
-                entry["pair"] = base_pair  # убираем "/1"
+                entry["pair"] = base_pair
                 continue
 
             if key not in interval_cache:

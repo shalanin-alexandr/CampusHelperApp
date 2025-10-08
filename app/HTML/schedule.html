@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Расписание</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #e9ecef;
+        }
+        tr.replacement {
+            background-color: #fff3cd;
+        }
+        tr.comment {
+            background-color: #d1ecf1;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Расписание на {{ target_day }}</h1>
+
+    {% if schedule %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Пара</th>
+                    <th>Время</th>
+                    <th>Предмет</th>
+                    <th>Аудитория</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in schedule %}
+                    {% if item.comment %}
+                        <tr class="comment">
+                            <td colspan="4">{{ item.comment }}</td>
+                        </tr>
+                    {% else %}
+                        <tr class="{% if item.replaced_subject %}replacement{% endif %}">
+                            <td>{{ item.pair }}</td>
+                            <td>{{ item.time }}</td>
+                            <td>
+                                {% if item.replaced_subject %}
+                                    <del>{{ item.replaced_subject }}</del> → <strong>{{ item.subject }}</strong>
+                                {% else %}
+                                    {{ item.subject }}
+                                {% endif %}
+                            </td>
+                            <td>{{ item.room }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Нет данных для отображения.</p>
+    {% endif %}
+</body>
+</html>

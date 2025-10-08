@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>🎉 События колледжа</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f6f8;
+      padding: 2em;
+      max-width: 700px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 2em;
+    }
+    .card {
+      display: block;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      margin-bottom: 1.5em;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.2s;
+    }
+    .card:hover {
+      transform: scale(1.02);
+    }
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+    .card-content {
+      padding: 1em;
+    }
+    .card-title {
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-bottom: 0.5em;
+    }
+    .card-description {
+      color: #666;
+      font-size: 0.95em;
+    }
+  </style>
+</head>
+<body>
+  <h1>📅 Актуальные события</h1>
+  {% for event in events|reverse %}
+  <a class="card" href="/event/{{ event.id }}">
+    <img src="{{ event.image }}" alt="Изображение события">
+    <div class="card-content">
+      <div class="card-title">{{ event.title }}</div>
+      <div class="card-description">{{ event.description }}</div>
+    </div>
+  </a>
+  {% else %}
+    <p>Событий пока нет.</p>
+  {% endfor %}
+</body>
+</html>

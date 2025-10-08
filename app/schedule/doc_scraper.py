@@ -3,8 +3,11 @@ import io
 import re
 import os
 from docx import Document
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
+
+# Абсолютный путь для файла кэша
+CACHE_FILE = os.path.join(os.path.dirname(__file__), "last_docx_url.txt")
 
 weekday_map = {
     0: "Понедельник",
@@ -38,7 +41,7 @@ def fetch_latest_docx_url(page_url):
         print(f"❌ Ошибка при получении ссылки: {e}")
         return None
 
-def has_docx_url_changed(new_url, cache_file="last_docx_url.txt"):
+def has_docx_url_changed(new_url, cache_file=CACHE_FILE):
     try:
         with open(cache_file, "r") as f:
             old_url = f.read().strip()
@@ -55,6 +58,33 @@ def load_docx_from_url(url):
     response = requests.get(url)
     response.raise_for_status()
     return Document(io.BytesIO(response.content))
+
+
+def get_day_from_docx(doc):
+    """Извлекает день недели из текста документа."""
+    
+    full_text = []
+    # Ищем в абзацах (наиболее вероятно)
+    for para in doc.paragraphs:
+        full_text.append(para.text)
+        
+    # Ищем в первой таблице (заголовок)
+    if not any(full_text) and doc.tables:
+        for row in doc.tables[0].rows:
+            full_text.extend([cell.text.strip() for cell in row.cells])
+
+    # Объединяем весь текст и ищем паттерн: (ДЕНЬ)
+    text_content = " ".join(full_text).upper()
+    
+    # Регулярное выражение для поиска дня недели
+    # Ищет (ПОНЕДЕЛЬНИК) или (ВТОРНИК) и т.д., включая возможные скобки
+    match = re.search(r'(ПОНЕДЕЛЬНИК|ВТОРНИК|СРЕДА|ЧЕТВЕРГ|ПЯТНИЦА|СУББОТА|ВОСКРЕСЕНЬЕ)', text_content)
+
+    if match:
+        return match.group(1).capitalize()
+    
+    return None
+
 
 def parse_schedule_table(table, target_group, day_label):
     schedule_data = {
@@ -113,15 +143,10 @@ def parse_schedule_table(table, target_group, day_label):
 
     return schedule_data
 
-def get_docx_schedule(group_name, page_url="http://www.bobruisk.belstu.by/dnevnoe-otdelenie/raspisanie-zanyatiy-i-zvonkov-zamenyi#gsc.tab=0"):
+def get_docx_schedule(group_name, page_url="http://www.bobruisk.belstu.by/dnevnoe-otdelenie/raspisanie-zanyatiy-i-zvonkov-zamenyi#gsc.tab=0", doc_updated=False):
     docx_url = fetch_latest_docx_url(page_url)
     if not docx_url:
         return None
-
-    if not has_docx_url_changed(docx_url):
-        print("ℹ️ Ссылка на замену не изменилась — возможно, замены не обновились.")
-    else:
-        print("🔄 Обнаружена новая ссылка на замены.")
 
     try:
         doc = load_docx_from_url(docx_url)
@@ -131,12 +156,27 @@ def get_docx_schedule(group_name, page_url="http://www.bobruisk.belstu.by/dnevno
             "schedule": []
         }
 
-        for i, table in enumerate(doc.tables):
-            label = weekday_map[(datetime.now().weekday() + i) % 7]
-            result = parse_schedule_table(table, group_name, label)
+        # --- КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: Парсим день из документа ---
+        parsed_day = get_day_from_docx(doc)
+        
+        if parsed_day:
+            day_label = parsed_day
+            print(f"📅 Присваиваем день для замен (СПАРСЕННЫЙ): {day_label}")
+        else:
+            # РЕЗЕРВНЫЙ ВАРИАНТ: Если не удалось спарсить, используем логику "Завтра"
+            target_day = datetime.now() + timedelta(days=1)
+            if target_day.weekday() == 6: 
+                target_day += timedelta(days=1)
+            day_label = weekday_map[target_day.weekday()]
+            print(f"⚠️ Использую резервный день (Завтра): {day_label}")
+        # ---------------------------------------------------
+
+        for table in doc.tables:
+            result = parse_schedule_table(table, group_name, day_label)
             full_schedule["schedule"].extend(result["schedule"])
 
         if full_schedule["schedule"]:
+            # Возвращаем только расписание
             return full_schedule
         else:
             print(f"⚠️ Группа {group_name} не найдена в документе.")
@@ -160,7 +200,14 @@ def get_available_replacement_days(doc_schedule):
 
 if __name__ == '__main__':
     MY_GROUP = "РС02-24"
-    schedule = get_docx_schedule(MY_GROUP)
+    DOC_PAGE_URL = "http://www.bobruisk.belstu.by/dnevnoe-otdelenie/raspisanie-zanyatiy-i-zvonkov-zamenyi"
+    
+    DOCX_URL = fetch_latest_docx_url(DOC_PAGE_URL)
+    # Вызываем has_docx_url_changed для обновления кэша, но не используем его для определения дня
+    doc_updated = has_docx_url_changed(DOCX_URL) 
+    
+    # Теперь doc_updated не влияет на день, только на возможную логику кэширования в будущем
+    schedule = get_docx_schedule(MY_GROUP, DOC_PAGE_URL, doc_updated) 
 
     if schedule:
         print("✅ Получено расписание замен:")

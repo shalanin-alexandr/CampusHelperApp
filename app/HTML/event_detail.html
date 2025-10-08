@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ event.title }}</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f6f8;
+      padding: 2em;
+      max-width: 800px;
+      margin: auto;
+    }
+    .event-header {
+      text-align: center;
+      margin-bottom: 2em;
+    }
+    .event-header h1 {
+      font-size: 2em;
+      margin-bottom: 0.2em;
+    }
+    .event-date {
+      color: #888;
+      font-size: 0.95em;
+    }
+    .event-image {
+      width: 100%;
+      max-height: 400px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 2em;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .event-content {
+      background: white;
+      padding: 1.5em;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      line-height: 1.6;
+    }
+    .event-content h2 {
+      margin-top: 1em;
+      font-size: 1.4em;
+    }
+    .event-content p {
+      margin: 0.8em 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="event-header">
+    <h1>{{ event.title }}</h1>
+    <div class="event-date">📅 {{ event.date }}</div>
+  </div>
+
+  <img class="event-image" src="{{ event.image }}" alt="Изображение события">
+
+  <div class="event-content">
+    {{ event.content | safe }}
+  </div>
+</body>
+</html>

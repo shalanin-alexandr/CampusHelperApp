@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Панель преподавателя</title>
+  <style>
+    body { font-family: sans-serif; background: #f4f6f8; padding: 2em; max-width: 1000px; margin: auto; }
+    h1 { text-align: center; margin-bottom: 2em; }
+    .tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5em; }
+    .tool { background: white; padding: 1.5em; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center; text-decoration: none; color: inherit; transition: transform 0.2s; }
+    .tool:hover { transform: scale(1.03); background: #eef; }
+    .tool h2 { margin-bottom: 0.5em; font-size: 1.2em; }
+    .tool p { color: #666; font-size: 0.95em; }
+  </style>
+</head>
+<body>
+  <h1>🧰 Панель преподавателя</h1>
+  <div class="tools">
+    <a class="tool" href="/admin-panel/events">
+      <h2>📅 Управление событиями</h2>
+      <p>Добавление, удаление и просмотр событий</p>
+    </a>
+  </div>
+</body>
+</html>

@@ -31,7 +31,7 @@ def merge_schedules(excel_data, doc_data):
         "schedule": []
     }
 
-    replacements = doc_data.get("schedule", [])
+    replacements = doc_data.get("schedule", []) if doc_data else []
 
     for lesson in excel_data["schedule"]:
         pair_number = str(lesson.get("pair")).strip() if lesson.get("pair") else None
@@ -39,7 +39,6 @@ def merge_schedules(excel_data, doc_data):
         time = lesson.get("time")
         room = lesson.get("room", "")
         subject = lesson.get("subject", "")
-        teacher = lesson.get("teacher", "")
 
         replacement = next(
             (r for r in replacements
@@ -66,9 +65,7 @@ def merge_schedules(excel_data, doc_data):
                 "pair": display_pair,
                 "room": replacement.get("room", room),
                 "subject": replacement["to"].get("subject") or subject,
-                "teacher": replacement["to"].get("teacher") or teacher,
-                "replaced_subject": subject,
-                "replaced_teacher": teacher
+                "replaced_subject": subject
             })
         else:
             merged["schedule"].append({
@@ -76,8 +73,7 @@ def merge_schedules(excel_data, doc_data):
                 "time": time,
                 "pair": display_pair,
                 "room": room,
-                "subject": subject,
-                "teacher": teacher
+                "subject": subject
             })
 
     for r in replacements:
@@ -89,23 +85,24 @@ def merge_schedules(excel_data, doc_data):
 if __name__ == '__main__':
     EXCEL_URL = "http://www.bobruisk.belstu.by/uploads/b1/s/8/648/basic/117/614/Raspisanie_uchebnyih_zanyatiy_na_2025-2026_uch.god_1_semestr.xlsx?t=1756801696"
     DOC_PAGE_URL = "http://www.bobruisk.belstu.by/dnevnoe-otdelenie/raspisanie-zanyatiy-i-zvonkov-zamenyi"
-    MY_GROUP = "РС02-24"
+    MY_GROUP = "РС02-23"
 
     excel_schedule = get_excel_schedule(EXCEL_URL, MY_GROUP)
 
     DOCX_URL = fetch_latest_docx_url(DOC_PAGE_URL)
-    if not DOCX_URL:
-        print("❌ Не удалось получить ссылку на замены. Вывожу обычное расписание.")
-        doc_updated = False
-        doc_schedule = {"group": MY_GROUP, "schedule": []}
-    else:
+    
+    doc_schedule = None
+    doc_updated = False
+    
+    if DOCX_URL:
         doc_updated = has_docx_url_changed(DOCX_URL)
-        if doc_updated:
-            print("🔄 Обнаружена новая ссылка на замены.")
-            doc_schedule = get_docx_schedule(MY_GROUP, DOC_PAGE_URL)
+        print(f"🔄 Обнаружена новая ссылка на замены: {doc_updated}")
+        temp_doc_schedule = get_docx_schedule(MY_GROUP, DOC_PAGE_URL)
+        
+        if temp_doc_schedule:
+             doc_schedule = temp_doc_schedule
         else:
-            print("ℹ️ Ссылка на замену не изменилась — замены не обновились.")
-            doc_schedule = get_docx_schedule(MY_GROUP, DOC_PAGE_URL)
+             print("❌ doc_scraper вернул None или пустые данные.")
 
     if not excel_schedule:
         print("❌ Ошибка при получении основного расписания.")
@@ -114,19 +111,22 @@ if __name__ == '__main__':
     now = datetime.now()
     today_rus = weekday_map_eng_to_rus[now.strftime("%A")]
 
-
     tomorrow = now + timedelta(days=1)
-    if tomorrow.weekday() == 6:  # воскресенье
+    if tomorrow.weekday() == 6:
         tomorrow += timedelta(days=1)
     tomorrow_rus = weekday_map_eng_to_rus[tomorrow.strftime("%A")]
 
+    parsed_day_from_doc = None
+    if doc_schedule and doc_schedule.get("schedule"):
+        parsed_day_from_doc = doc_schedule["schedule"][0].get("day")
 
-    if today_rus == "Суббота":
-        target_days = ["Суббота", "Понедельник"]
-    elif doc_updated:
-        target_days = [tomorrow_rus]
+    if parsed_day_from_doc:
+        target_days = [parsed_day_from_doc]
     else:
-        target_days = [today_rus]
+        if today_rus == "Суббота":
+            target_days = ["Суббота", "Понедельник"]
+        else:
+            target_days = [tomorrow_rus]
 
     print(f"\n📎 Ссылка на замены: {DOCX_URL}")
     print(f"🔍 Замены обновились: {doc_updated}")
@@ -142,6 +142,16 @@ if __name__ == '__main__':
                 if normalize_day(p.get("day")) == target_day_norm
             ]
         }
-        final_schedule = merge_schedules(filtered, doc_schedule)
+        
+        doc_schedule_for_target_day = {
+            "group": doc_schedule["group"] if doc_schedule else MY_GROUP,
+            "schedule": [
+                p for p in doc_schedule.get("schedule", []) if doc_schedule 
+                and normalize_day(p.get("day")) == target_day_norm
+            ]
+        }
+        
+        final_schedule = merge_schedules(filtered, doc_schedule_for_target_day)
+        
         print(f"\n📅 Финальное расписание на {target_day}:")
         print(json.dumps(final_schedule, indent=4, ensure_ascii=False))

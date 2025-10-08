@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>🧠 Сократитель текста</title>
+  <style>
+    body { font-family: sans-serif; padding: 2em; max-width: 800px; margin: auto; }
+    textarea, input, button { width: 100%; margin-top: 1em; padding: 0.5em; font-size: 1em; }
+    ul { margin-top: 1em; }
+  </style>
+</head>
+<body>
+  <h1>🧠 Сократитель текста</h1>
+  <textarea id="text" rows="10" placeholder="Вставьте текст..."></textarea>
+  <input type="text" id="filename" placeholder="Имя файла (без .docx)">
+  <button onclick="compress()">Сжать и сохранить</button>
+
+  <h2>📄 Сокращённый текст:</h2>
+  <ul id="output"></ul>
+
+  <script>
+    async function compress() {
+      const text = document.getElementById('text').value;
+      const filename = document.getElementById('filename').value || 'summary';
+
+      const res = await fetch('/api/compress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, filename })
+      });
+
+      const data = await res.json();
+      const list = document.getElementById('output');
+      list.innerHTML = '';
+      data.summary.forEach(line => {
+        const li = document.createElement('li');
+        li.textContent = line;
+        list.appendChild(li);
+      });
+
+      alert("✅ Документ сохранён: " + data.file);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>🎓 Калькулятор оценок</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f0f4f8;
+      padding: 2em;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 1em;
+    }
+    .grade-buttons button {
+      margin: 0.3em;
+      padding: 0.5em 1em;
+      font-size: 1.2em;
+      cursor: pointer;
+    }
+    .output {
+      margin-top: 2em;
+      font-size: 1.2em;
+    }
+    .remove-btn {
+      margin-top: 1em;
+      background: #ff6666;
+      color: white;
+      border: none;
+      padding: 0.5em 1em;
+      cursor: pointer;
+    }
+    ul#grade-list {
+      list-style: none;
+      padding: 0;
+      margin-top: 1em;
+    }
+    ul#grade-list li {
+      background: #ffffff;
+      margin: 0.3em auto;
+      padding: 0.5em 1em;
+      width: fit-content;
+      border-radius: 6px;
+      box-shadow: 0 0 4px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>📊 Калькулятор оценок</h1>
+
+  <div class="grade-buttons">
+    <p>Добавить оценку:</p>
+    <div id="buttons"></div>
+  </div>
+
+  <button class="remove-btn" onclick="removeLast()">Удалить последнюю</button>
+
+  <div class="output">
+    <p id="average">Средняя: —</p>
+    <p id="count">Оценок: —</p>
+    <p>Введённые оценки:</p>
+    <ul id="grade-list"></ul>
+  </div>
+
+  <script>
+    function updateGrades() {
+      fetch('/api/grades')
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('average').textContent = `Средняя: ${data.average}`;
+          document.getElementById('count').textContent = `Оценок: ${data.count}`;
+
+          const list = document.getElementById('grade-list');
+          list.innerHTML = '';
+
+          data.grades.forEach((grade, index) => {
+            const item = document.createElement('li');
+            item.textContent = `#${index + 1}: ${grade}`;
+            list.appendChild(item);
+          });
+        });
+    }
+
+    function addGrade(value) {
+      fetch(`/api/grades/add/${value}`).then(updateGrades);
+    }
+
+    function removeLast() {
+      fetch('/api/grades/remove').then(updateGrades);
+    }
+
+    // Генерация кнопок от 1 до 10
+    const buttonsContainer = document.getElementById('buttons');
+    for (let i = 1; i <= 10; i++) {
+      const btn = document.createElement('button');
+      btn.textContent = i;
+      btn.onclick = () => addGrade(i);
+      buttonsContainer.appendChild(btn);
+    }
+
+    updateGrades(); // начальная загрузка
+  </script>
+</body>
+</html>
