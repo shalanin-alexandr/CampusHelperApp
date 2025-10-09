@@ -1,4 +1,4 @@
-from excel_scraper import get_excel_schedule
+from excel_scraper import get_excel_schedule, split_time_interval
 from doc_scraper import (
     get_docx_schedule,
     get_available_replacement_days,
@@ -7,7 +7,6 @@ from doc_scraper import (
 )
 from datetime import datetime, timedelta
 import json
-import re
 
 weekday_map_eng_to_rus = {
     "Monday": "Понедельник",
@@ -22,17 +21,10 @@ weekday_map_eng_to_rus = {
 def normalize_day(day):
     return day.strip().lower().replace("ё", "е") if isinstance(day, str) else ""
 
-def normalize_pair(p):
-    return str(p).split("/")[0].strip() if p else ""
-
 def is_pair_match(excel_pair, doc_pair):
     if not excel_pair or not doc_pair:
         return False
-    base_excel = normalize_pair(excel_pair)
-    base_doc = normalize_pair(doc_pair)
-    return base_excel == base_doc or base_excel in base_doc or base_doc in base_excel
-
-
+    return str(excel_pair).strip() == str(doc_pair).strip()
 
 def merge_schedules(excel_data, doc_data):
     merged = {
@@ -41,6 +33,7 @@ def merge_schedules(excel_data, doc_data):
     }
 
     replacements = doc_data.get("schedule", []) if doc_data else []
+    week_type = doc_data.get("week_type")
 
     for lesson in excel_data["schedule"]:
         pair_number = str(lesson.get("pair")).strip() if lesson.get("pair") else None
@@ -48,22 +41,21 @@ def merge_schedules(excel_data, doc_data):
         time = lesson.get("time")
         room = lesson.get("room", "")
         subject = lesson.get("subject", "")
+        lesson_week_type = lesson.get("week_type")
+        duration = lesson.get("duration")
 
-        def is_pair_match(excel_pair, doc_pair):
-            if not excel_pair or not doc_pair:
-                return False
-            base_excel = normalize_pair(excel_pair)
-            base_doc = normalize_pair(doc_pair)
-            return base_excel == base_doc or base_excel in base_doc or base_doc in base_excel
+        if lesson_week_type and week_type and lesson_week_type != week_type:
+            continue
+
+        if duration == 1 and lesson_week_type == "upper" and week_type == "lower":
+            continue
 
         replacement = next(
             (r for r in replacements
-            if is_pair_match(pair_number, r.get("pair"))
-            and normalize_day(r.get("day")) == normalize_day(day)),
-        None
-)
-
-
+             if is_pair_match(pair_number, r.get("pair"))
+             and normalize_day(r.get("day")) == normalize_day(day)),
+            None
+        )
 
         display_pair = pair_number
         if pair_number and pair_number.endswith("/1"):
@@ -72,20 +64,21 @@ def merge_schedules(excel_data, doc_data):
                 and normalize_day(p.get("day")) == normalize_day(day)
                 for p in excel_data["schedule"]
             )
-            if not has_second:
+            if not has_second and duration == 2:
                 display_pair = pair_number.split("/")[0]
+            elif duration == 1:
+                display_pair = pair_number
 
         if replacement and "to" in replacement:
             print(f"🔁 Замена на {day}, пара {pair_number}: {subject} → {replacement['to'].get('subject')}")
             merged["schedule"].append({
                 "day": day,
                 "time": time,
-                "pair": replacement.get("pair", display_pair),  
+                "pair": replacement.get("pair", display_pair),
                 "room": replacement.get("room", room),
                 "subject": replacement["to"].get("subject") or subject,
                 "replaced_subject": subject
             })
-
         else:
             merged["schedule"].append({
                 "day": day,
@@ -95,7 +88,37 @@ def merge_schedules(excel_data, doc_data):
                 "subject": subject
             })
 
+    excel_pairs = set((normalize_day(l["day"]), l["pair"]) for l in excel_data["schedule"] if l.get("pair"))
+
     for r in replacements:
+        if "pair" in r and "to" in r and r.get("day"):
+            key = (normalize_day(r["day"]), r["pair"])
+            if key not in excel_pairs:
+                time = None
+                if "/" in r["pair"]:
+                    base_pair = r["pair"].split("/")[0]
+                    index = int(r["pair"].split("/")[1])
+                    excel_time = next(
+                        (l.get("raw_time") for l in excel_data["schedule"]
+                        if str(l.get("pair", "")).startswith(base_pair)
+                        and normalize_day(l.get("day")) == normalize_day(r["day"])
+                        and l.get("raw_time")),
+                        None
+                    )
+
+                    if excel_time:
+                        first, second = split_time_interval(excel_time)
+                        time = first if index == 1 else second
+
+                merged["schedule"].append({
+                    "day": r["day"],
+                    "time": time,
+                    "pair": r["pair"],
+                    "room": r.get("room", ""),
+                    "subject": r["to"].get("subject", ""),
+                    "replaced_subject": None
+                })
+
         if "comment" in r:
             merged["schedule"].append({"comment": r["comment"]})
 
@@ -109,19 +132,17 @@ if __name__ == '__main__':
     excel_schedule = get_excel_schedule(EXCEL_URL, MY_GROUP)
 
     DOCX_URL = fetch_latest_docx_url(DOC_PAGE_URL)
-    
     doc_schedule = None
     doc_updated = False
-    
+
     if DOCX_URL:
         doc_updated = has_docx_url_changed(DOCX_URL)
         print(f"🔄 Обнаружена новая ссылка на замены: {doc_updated}")
         temp_doc_schedule = get_docx_schedule(MY_GROUP, DOC_PAGE_URL)
-        
         if temp_doc_schedule:
-             doc_schedule = temp_doc_schedule
+            doc_schedule = temp_doc_schedule
         else:
-             print("❌ doc_scraper вернул None или пустые данные.")
+            print("❌ doc_scraper вернул None или пустые данные.")
 
     if not excel_schedule:
         print("❌ Ошибка при получении основного расписания.")
@@ -142,10 +163,7 @@ if __name__ == '__main__':
     if parsed_day_from_doc:
         target_days = [parsed_day_from_doc]
     else:
-        if today_rus == "Суббота":
-            target_days = ["Суббота", "Понедельник"]
-        else:
-            target_days = [tomorrow_rus]
+        target_days = ["Суббота", "Понедельник"] if today_rus == "Суббота" else [tomorrow_rus]
 
     print(f"\n📎 Ссылка на замены: {DOCX_URL}")
     print(f"🔍 Замены обновились: {doc_updated}")
@@ -161,16 +179,16 @@ if __name__ == '__main__':
                 if normalize_day(p.get("day")) == target_day_norm
             ]
         }
-        
+
         doc_schedule_for_target_day = {
             "group": doc_schedule["group"] if doc_schedule else MY_GROUP,
             "schedule": [
-                p for p in doc_schedule.get("schedule", []) if doc_schedule 
+                p for p in doc_schedule.get("schedule", []) if doc_schedule
                 and normalize_day(p.get("day")) == target_day_norm
             ]
         }
-        
+
         final_schedule = merge_schedules(filtered, doc_schedule_for_target_day)
-        
+
         print(f"\n📅 Финальное расписание на {target_day}:")
         print(json.dumps(final_schedule, indent=4, ensure_ascii=False))

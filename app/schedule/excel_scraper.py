@@ -4,7 +4,7 @@ from openpyxl import load_workbook
 import json
 from collections import defaultdict, Counter
 from datetime import datetime, timedelta
-import re
+from openpyxl.styles import PatternFill
 
 def find_group_column(sheet, group_name):
     for row in sheet.iter_rows(min_row=1, max_row=24):
@@ -35,9 +35,31 @@ def split_time_interval(time_str):
         first_interval = f"{start.strftime('%H:%M')} - {first_end.strftime('%H:%M')}"
         second_interval = f"{second_start.strftime('%H:%M')} - {end.strftime('%H:%M')}"
         return first_interval, second_interval
-    except Exception as e:
-        print(f"⚠️ Ошибка разбития времени: {e}")
+    except:
         return time_str, time_str
+
+def interpret_color(cell):
+    try:
+        fill = cell.fill
+        fg = fill.fgColor
+        if fg.type == "rgb":
+            rgb = fg.rgb.upper()
+            if rgb.startswith("FF"):
+                rgb = rgb[2:]
+
+            upper_colors = {"00B0F0", "0070C0", "0066FF", "CCECFF"}
+            lower_colors = {"00FF00", "00B050", "00FF99"}
+            hour_colors = {"FFC0CB", "FF99CC", "FFB6C1", "FF66CC"}
+
+            if rgb in upper_colors:
+                return "upper"
+            elif rgb in lower_colors:
+                return "lower"
+            elif rgb in hour_colors:
+                return "hour"
+        return None
+    except:
+        return None
 
 def get_excel_schedule(url, group_name):
     try:
@@ -86,18 +108,31 @@ def get_excel_schedule(url, group_name):
             if subject_cell:
                 key = (current_day, pair_number)
                 pair_counts[key] += 1
-                if pair_number:
-                    indexed_pair = f"{pair_number}/{pair_counts[key]}"
-                else:
-                    indexed_pair = None
+
+                color_type = interpret_color(row[column_index])
+                week_type = None
+                duration = 2
+
+                if color_type == "upper":
+                    week_type = "upper"
+                elif color_type == "lower":
+                    week_type = "lower"
+                elif color_type == "hour":
+                    duration = 1
+
+                indexed_pair = f"{pair_number}/{pair_counts[key]}" if pair_number else None
 
                 pair_info = {
                     "day": current_day,
                     "time": clean_time,
+                    "raw_time": clean_time,
                     "pair": indexed_pair,
                     "room": str(room_cell).strip() if room_cell else "",
-                    "subject": str(subject_cell).strip() if subject_cell else ""
+                    "subject": str(subject_cell).strip() if subject_cell else "",
+                    "week_type": week_type,
+                    "duration": duration
                 }
+
                 schedule_data["schedule"].append(pair_info)
 
         pair_occurrences = Counter((p["day"], p["pair"].split("/")[0]) for p in schedule_data["schedule"] if p.get("pair"))
@@ -112,15 +147,14 @@ def get_excel_schedule(url, group_name):
             index = int(pair_raw.split("/")[1])
             key = (entry["day"], base_pair)
 
-            if pair_occurrences[key] == 1:
-                entry["pair"] = base_pair
-                continue
-
             if key not in interval_cache:
                 interval_cache[key] = split_time_interval(entry["time"])
 
             first, second = interval_cache[key]
             entry["time"] = first if index == 1 else second
+
+            if pair_occurrences[key] == 1:
+                entry["pair"] = f"{base_pair}/1" if entry.get("duration") == 1 else base_pair
 
         return schedule_data
         

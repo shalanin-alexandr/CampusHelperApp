@@ -41,6 +41,22 @@ def fetch_latest_docx_url(page_url):
         print(f"❌ Ошибка при получении ссылки: {e}")
         return None
 
+
+def get_week_type_from_docx(doc):
+    full_text = []
+    for para in doc.paragraphs:
+        full_text.append(para.text.lower())
+
+    text_content = " ".join(full_text)
+
+    if "верхняя неделя" in text_content:
+        return "upper"
+    elif "нижняя неделя" in text_content:
+        return "lower"
+    return None
+
+
+
 def has_docx_url_changed(new_url, cache_file=CACHE_FILE):
     try:
         with open(cache_file, "r") as f:
@@ -156,7 +172,11 @@ def get_docx_schedule(group_name, page_url="http://www.bobruisk.belstu.by/dnevno
             "schedule": []
         }
 
-        # --- КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: Парсим день из документа ---
+        week_type = get_week_type_from_docx(doc)
+        full_schedule["week_type"] = week_type
+        print(f"📌 Тип недели: {week_type}")
+
+
         parsed_day = get_day_from_docx(doc)
         
         if parsed_day:
@@ -169,7 +189,7 @@ def get_docx_schedule(group_name, page_url="http://www.bobruisk.belstu.by/dnevno
                 target_day += timedelta(days=1)
             day_label = weekday_map[target_day.weekday()]
             print(f"⚠️ Использую резервный день (Завтра): {day_label}")
-        # ---------------------------------------------------
+
 
         for table in doc.tables:
             result = parse_schedule_table(table, group_name, day_label)
