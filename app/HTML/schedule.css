@@ -1,0 +1,111 @@
+/* 🌐 Общие стили */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  background-color: #f8f9fa;
+  color: #000000;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* 👋 Контент */
+.main-content {
+  flex: 1;
+  padding: 20px 16px 80px;
+  overflow-y: auto;
+}
+
+.main-content h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 24px;
+  color: #007bff;
+}
+
+h2 {
+  margin-top: 40px;
+  color: #343a40;
+  font-size: 20px;
+}
+
+/* 📋 Таблица */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: white;
+  margin-bottom: 30px;
+  font-size: 16px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+th, td {
+  border: 1px solid #dee2e6;
+  padding: 12px;
+  text-align: left;
+}
+
+th {
+  background-color: #e9ecef;
+  font-weight: bold;
+}
+
+tr.replacement {
+  background-color: #e6f0ff;
+}
+
+tr.comment {
+  background-color: #d1ecf1;
+  font-style: italic;
+}
+
+.empty {
+  text-align: center;
+  font-size: 16px;
+  margin-top: 40px;
+}
+
+/* 🔽 Нижняя навигация — как на главной */
+.bottom-nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 8px 0;
+  background-color: #ffffff;
+  border-top: 1px solid #e0e0e0;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+.nav-item {
+  flex: 1;
+  min-width: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: #000000;
+  font-size: 13px;
+  padding: 6px 0;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.nav-item img {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 4px;
+}
+
+.nav-item.active {
+  background-color: #e6f0ff;
+  border-radius: 12px;
+  color: #007bff;
+}

@@ -1,78 +1,79 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Расписание</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            background-color: #f8f9fa;
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: white;
-        }
-        th, td {
-            border: 1px solid #dee2e6;
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #e9ecef;
-        }
-        tr.replacement {
-            background-color: #fff3cd;
-        }
-        tr.comment {
-            background-color: #d1ecf1;
-            font-style: italic;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Расписание</title>
+  <link rel="stylesheet" href="/html-static/schedule.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <h1>Расписание на {{ target_day }}</h1>
+  <!-- 👋 Основной контент -->
+  <main class="main-content">
+    <h1>Расписание</h1>
 
-    {% if schedule %}
+    {% if schedule_by_day %}
+      {% for day, schedule in schedule_by_day.items() %}
+        <h2>{{ day }}</h2>
         <table>
-            <thead>
-                <tr>
-                    <th>Пара</th>
-                    <th>Время</th>
-                    <th>Предмет</th>
-                    <th>Аудитория</th>
+          <thead>
+            <tr>
+              <th>Пара</th>
+              <th>Время</th>
+              <th>Предмет</th>
+              <th>Аудитория</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in schedule %}
+              {% if item.comment %}
+                <tr class="comment">
+                  <td colspan="4">{{ item.comment }}</td>
                 </tr>
-            </thead>
-            <tbody>
-                {% for item in schedule %}
-                    {% if item.comment %}
-                        <tr class="comment">
-                            <td colspan="4">{{ item.comment }}</td>
-                        </tr>
+              {% else %}
+                <tr class="{% if item.replaced_subject %}replacement{% endif %}">
+                  <td>{{ item.pair }}</td>
+                  <td>{{ item.time }}</td>
+                  <td>
+                    {% if item.replaced_subject %}
+                      <del>{{ item.replaced_subject }}</del> → <strong>{{ item.subject }}</strong>
                     {% else %}
-                        <tr class="{% if item.replaced_subject %}replacement{% endif %}">
-                            <td>{{ item.pair }}</td>
-                            <td>{{ item.time }}</td>
-                            <td>
-                                {% if item.replaced_subject %}
-                                    <del>{{ item.replaced_subject }}</del> → <strong>{{ item.subject }}</strong>
-                                {% else %}
-                                    {{ item.subject }}
-                                {% endif %}
-                            </td>
-                            <td>{{ item.room }}</td>
-                        </tr>
+                      {{ item.subject }}
                     {% endif %}
-                {% endfor %}
-            </tbody>
+                  </td>
+                  <td>{{ item.room }}</td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
         </table>
+      {% endfor %}
     {% else %}
-        <p>Нет данных для отображения.</p>
+      <p class="empty">Нет данных для отображения.</p>
     {% endif %}
+  </main>
+
+  <!-- 🔽 Нижняя навигация -->
+  <nav class="bottom-nav">
+    <a href="/journal" class="nav-item">
+      <img src="/static/icons/journal.png" alt="Журнал">
+      <span>Журнал</span>
+    </a>
+    <a href="/schedule" class="nav-item active">
+      <img src="/static/icons/schedule.png" alt="Расписание">
+      <span>Расписание</span>
+    </a>
+    <a href="/student" class="nav-item">
+      <img src="/static/icons/home.png" alt="Главная">
+      <span>Главная</span>
+    </a>
+    <a href="/tools" class="nav-item">
+      <img src="/static/icons/tools.png" alt="Инструменты">
+      <span>Инструменты</span>
+    </a>
+    <a href="/events" class="nav-item">
+      <img src="/static/icons/news.png" alt="Новости">
+      <span>Новости</span>
+    </a>
+  </nav>
 </body>
 </html>

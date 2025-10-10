@@ -19,11 +19,15 @@ from events.users import authenticate, add_user
 
 app = FastAPI(debug=True)
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/html-static", StaticFiles(directory="HTML"), name="html-static")
+
 templates = Jinja2Templates(directory="HTML")
 
 EVENTS_FILE = 'data/events.json'
 UPLOAD_FOLDER = 'static/uploads'
 tracker = GradeTracker()
+
+
 
 # 📁 Вспомогательные функции
 def load_events():
@@ -80,8 +84,9 @@ async def schedule_page(request: Request):
     if not excel_schedule or not excel_schedule.get("schedule"):
         return templates.TemplateResponse("schedule.html", {
             "request": request,
-            "target_day": "Ошибка",
-            "schedule": [{"comment": "Ошибка загрузки расписания."}]
+            "schedule_by_day": {
+                "Ошибка": [{"comment": "Ошибка загрузки расписания."}]
+            }
         })
 
     DOCX_URL = fetch_latest_docx_url(DOC_PAGE_URL)
@@ -110,6 +115,8 @@ async def schedule_page(request: Request):
         ["Суббота", "Понедельник"] if today_rus == "Суббота" else [tomorrow_rus]
     )
 
+    schedule_by_day = {}
+
     for target_day in target_days:
         filtered = {
             "group": excel_schedule["group"],
@@ -128,19 +135,18 @@ async def schedule_page(request: Request):
         }
 
         final_schedule = merge_schedules(filtered, doc_schedule_for_target_day)
+        schedule_by_day[target_day] = final_schedule.get("schedule", [])
 
-        if final_schedule.get("schedule"):
-            return templates.TemplateResponse("schedule.html", {
-                "request": request,
-                "target_day": target_day,
-                "schedule": final_schedule["schedule"]
-            })
+    if not any(schedule_by_day.values()):
+        schedule_by_day = {
+            ", ".join(target_days): [{"comment": f"Нет пар на {', '.join(target_days)}."}]
+        }
 
     return templates.TemplateResponse("schedule.html", {
         "request": request,
-        "target_day": ", ".join(target_days),
-        "schedule": [{"comment": f"Нет пар на {', '.join(target_days)}."}]
+        "schedule_by_day": schedule_by_day
     })
+
 
 
 
@@ -298,13 +304,14 @@ async def get_schedule():
         tomorrow += timedelta(days=1)
     tomorrow_rus = weekday_map_eng_to_rus[tomorrow.strftime("%A")]
 
-    parsed_day_from_doc = None
-    if doc_schedule.get("schedule"):
-        parsed_day_from_doc = doc_schedule["schedule"][0].get("day")
-
-    target_days = [parsed_day_from_doc] if parsed_day_from_doc else (
+    parsed_days_from_doc = sorted(set(
+        p.get("day") for p in doc_schedule.get("schedule", [])
+        if p.get("day")
+    ))
+    target_days = parsed_days_from_doc if parsed_days_from_doc else (
         ["Суббота", "Понедельник"] if today_rus == "Суббота" else [tomorrow_rus]
     )
+
 
     all_schedules = []
     for target_day in target_days:

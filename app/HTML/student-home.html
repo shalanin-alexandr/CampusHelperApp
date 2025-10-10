@@ -3,48 +3,50 @@
 <head>
   <meta charset="UTF-8">
   <title>Главный экран обучающегося</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #f4f6f8;
-      padding: 2em;
-      max-width: 800px;
-      margin: auto;
-    }
-    h1 {
-      margin-bottom: 2em;
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-    li {
-      margin-bottom: 1em;
-    }
-    a {
-      display: block;
-      padding: 0.8em 1em;
-      background: white;
-      border-left: 6px solid #0077cc;
-      border-radius: 6px;
-      text-decoration: none;
-      color: #0077cc;
-      font-weight: bold;
-      transition: background 0.2s;
-    }
-    a:hover {
-      background: #e6f0ff;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/html-static/student-home.css">
 </head>
 <body>
-  <h1>🎓 Добро пожаловать!</h1>
-  <ul>
-    <li><a href="/events">📅 События</a></li>
-    <li><a href="/notes">📝 Заметки</a></li>
-    <li><a href="/grades">📊 Оценки</a></li>
-    <li><a href="/compressor">🧠 Компрессор</a></li>
-    <li><a href="/schedule">📚 Расписание</a></li>
-  </ul>
+
+
+  <header class="top-bar">
+    <a href="#" class="icon-button left">
+      <img src="/static/icons/profile.png" alt="Профиль">
+    </a>
+    <a href="#" class="icon-button right">
+      <img src="/static/icons/settings.png" alt="Настройки">
+    </a>
+  </header>
+
+
+  <main class="main-content">
+    <h1>🎓 Добро пожаловать!</h1>
+    <!-- Здесь будут функции позже -->
+  </main>
+
+
+  <nav class="bottom-nav">
+    <a href="#" class="nav-item">
+      <img src="/static/icons/journal.png" alt="Журнал">
+      <span>Журнал</span>
+    </a>
+    <a href="/schedule" class="nav-item">
+      <img src="/static/icons/schedule.png" alt="Расписание">
+      <span>Расписание</span>
+    </a>
+    <a href="/student" class="nav-item active">
+      <img src="/static/icons/home.png" alt="Главная">
+      <span>Главная</span>
+    </a>
+    <a href="#" class="nav-item">
+      <img src="/static/icons/tools.png" alt="Инструменты">
+      <span>Инструменты</span>
+    </a>
+    <a href="/events" class="nav-item">
+      <img src="/static/icons/news.png" alt="Новости">
+      <span>Новости</span>
+    </a>
+  </nav>
+
 </body>
 </html>
