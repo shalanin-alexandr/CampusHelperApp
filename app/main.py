@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, Form, UploadFile
-from fastapi.responses import RedirectResponse, JSONResponse, HTMLResponse
+from fastapi.responses import RedirectResponse, JSONResponse, HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import os, sys, uuid, json
@@ -13,8 +13,9 @@ from schedule.doc_scraper import has_docx_url_changed, fetch_latest_docx_url, ge
 from schedule.schedule_merger import merge_schedules
 from grades.calculator import GradeTracker
 from notes.notes import get_all_notes, create_note, delete_note, mark_note_as_done, edit_note
-from sumarizer.compressor import compress_text, save_docx
 from events.users import authenticate, add_user
+from sumarizer.compressor import summarize_text, read_txt, read_docx, save_docx
+
 
 
 app = FastAPI(debug=True)
@@ -65,6 +66,19 @@ def delete_event(event_id):
     save_events(events)
 
 # 📄 HTML-страницы
+
+@app.get("/pomodoro")
+async def pomodoro(request: Request):
+    return templates.TemplateResponse("pomodoro.html", {"request": request})
+
+@app.get("/api/download/{filename}")
+async def download_file(filename: str):
+    path = f"generated/{filename}"
+    if not os.path.exists(path):
+        return JSONResponse({"error": "Файл не найден"}, status_code=404)
+    return FileResponse(path, filename=filename, media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+
+
 @app.get("/")
 async def index():
     return RedirectResponse("/admin-login")
@@ -210,14 +224,36 @@ async def event_detail(request: Request, event_id: str):
 async def compressor_page(request: Request):
     return templates.TemplateResponse("compressor.html", {"request": request})
 
+@app.get("/tools", response_class=HTMLResponse)
+async def tools_page(request: Request):
+    return templates.TemplateResponse("tools.html", {"request": request})
+
 # 📦 API
 @app.post("/api/compress")
-async def api_compress(data: dict):
-    text = data.get("text", "")
-    filename = data.get("filename", "summary")
-    summary = compress_text(text)
-    path = save_docx(summary, filename)
-    return {"summary": summary, "file": path}
+async def compress(text: str = Form(None), filename: str = Form(...), file: UploadFile = None):
+    if file:
+        ext = file.filename.lower().split('.')[-1]
+        content = await file.read()
+        path = f"temp_upload.{ext}"
+        with open(path, "wb") as f:
+            f.write(content)
+
+        if ext == "txt":
+            text = read_txt(path)
+        elif ext == "docx":
+            text = read_docx(path)
+        else:
+            return JSONResponse({"error": "Неподдерживаемый формат файла"}, status_code=400)
+
+        os.remove(path)
+
+    if not text or not text.strip():
+        return JSONResponse({"error": "Пустой текст"}, status_code=400)
+
+    summary = summarize_text(text)
+    saved_path = save_docx(summary, filename)
+
+    return {"summary": summary, "file": saved_path}
 
 @app.get("/api/notes")
 async def api_get_notes():

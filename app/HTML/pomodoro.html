@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>⏳ Pomodoro таймер</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="/html-static/pomodoro.css">
+</head>
+<body>
+
+  <main class="main-content">
+    <h1>⏳ Pomodoro таймер</h1>
+
+    <div class="pomodoro-wrap">
+      <div class="mode-row">
+        <button class="mode-btn active" data-mode="work">Работа</button>
+        <button class="mode-btn" data-mode="short">Короткий перерыв</button>
+        <button class="mode-btn" data-mode="long">Длинный перерыв</button>
+      </div>
+
+      <div class="circle-wrap">
+        <div class="progress" id="progress">
+          <div style="text-align:center">
+            <div class="time" id="time">25:00</div>
+            <div class="label-sub" id="session-label">Сессия 1</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn start" id="startBtn">Старт</button>
+        <button class="btn pause" id="pauseBtn" style="display:none">Пауза</button>
+        <button class="btn reset" id="resetBtn">Сброс</button>
+      </div>
+
+      <div class="settings">
+        <div class="settings-row">
+          <div class="small">Длительность работы</div>
+          <input class="input-mini" id="workMin" type="number" min="1" max="120" value="25"> мин
+        </div>
+        <div class="settings-row">
+          <div class="small">Короткий перерыв</div>
+          <input class="input-mini" id="shortMin" type="number" min="1" max="60" value="5"> мин
+        </div>
+        <div class="settings-row">
+          <div class="small">Длинный перерыв</div>
+          <input class="input-mini" id="longMin" type="number" min="5" max="60" value="15"> мин
+        </div>
+        <div class="settings-row">
+          <div class="small">Сессий до длинного перерыва</div>
+          <input class="input-mini" id="cycles" type="number" min="1" max="8" value="4">
+        </div>
+      </div>
+
+      <div class="footer">Звук при окончании сессии и автоматическое переключение</div>
+      <audio id="bell" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA="></audio>
+    </div>
+  </main>
+
+  <nav class="bottom-nav">
+    <a href="/journal" class="nav-item"><img src="/static/icons/journal.png"><span>Журнал</span></a>
+    <a href="/schedule" class="nav-item"><img src="/static/icons/schedule.png"><span>Расписание</span></a>
+    <a href="/student" class="nav-item"><img src="/static/icons/home.png"><span>Главная</span></a>
+    <a href="/tools" class="nav-item active"><img src="/static/icons/tools.png"><span>Инструменты</span></a>
+    <a href="/events" class="nav-item"><img src="/static/icons/news.png"><span>Новости</span></a>
+  </nav>
+
+  <script src="/html-static/pomodoro.js"></script>
+</body>
+</html>

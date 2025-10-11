@@ -2,44 +2,145 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>🧠 Сократитель текста</title>
-  <style>
-    body { font-family: sans-serif; padding: 2em; max-width: 800px; margin: auto; }
-    textarea, input, button { width: 100%; margin-top: 1em; padding: 0.5em; font-size: 1em; }
-    ul { margin-top: 1em; }
-  </style>
+  <title>🧠 Пересказчик</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/html-static/compressor.css">
 </head>
 <body>
-  <h1>🧠 Сократитель текста</h1>
-  <textarea id="text" rows="10" placeholder="Вставьте текст..."></textarea>
-  <input type="text" id="filename" placeholder="Имя файла (без .docx)">
-  <button onclick="compress()">Сжать и сохранить</button>
 
-  <h2>📄 Сокращённый текст:</h2>
-  <ul id="output"></ul>
+  <main class="main-content">
+
+    <!-- 🧩 Этап выбора -->
+    <div id="start-screen">
+      <h1>🧠 Пересказчик</h1>
+      <div class="choice-grid">
+        <button onclick="chooseSource('file')" class="choice-tile file" data-icon="📁">
+          Загрузить файл (.docx / .txt)
+        </button>
+        <button onclick="chooseSource('text')" class="choice-tile text" data-icon="✍️">
+          Ввести вручную
+        </button>
+      </div>
+    </div>
+
+    <!-- ✍️ Этап ввода -->
+    <div id="input-screen" style="display:none;">
+      <div class="back-button" onclick="goBack()">
+        <img src="/static/icons/backto.png" alt="Назад">
+      </div>
+      <textarea id="text" rows="8" placeholder="Вставьте текст вручную..."></textarea>
+      <button onclick="compress()">Сжать текст</button>
+    </div>
+
+    <!-- 📁 Этап загрузки -->
+    <div id="upload-screen" style="display:none;">
+      <div class="back-button" onclick="goBack()">
+        <img src="/static/icons/backto.png" alt="Назад">
+      </div>
+      <div class="upload-center">
+        <div class="upload-icon">📁</div>
+        <button id="select-btn" onclick="document.getElementById('file').click()">Загрузить файл</button>
+        <input type="file" id="file" accept=".txt,.docx">
+        <div id="file-name" class="file-name" style="display:none;"></div>
+        <button id="compress-btn" onclick="compress()">Сжать текст</button>
+      </div>
+    </div>
+
+    <!-- 📄 Этап результата -->
+    <div id="result-screen" style="display:none;">
+      <h2>📄 Сокращённый текст:</h2>
+      <div id="output" class="output-text"></div>
+      <button id="download-btn">📥 Скачать .docx</button>
+      <button onclick="reset()">🔁 Ещё раз</button>
+    </div>
+
+  </main>
+
+  <nav class="bottom-nav">
+    <a href="/journal" class="nav-item"><img src="/static/icons/journal.png"><span>Журнал</span></a>
+    <a href="/schedule" class="nav-item"><img src="/static/icons/schedule.png"><span>Расписание</span></a>
+    <a href="/student" class="nav-item"><img src="/static/icons/home.png"><span>Главная</span></a>
+    <a href="/tools" class="nav-item active"><img src="/static/icons/tools.png"><span>Инструменты</span></a>
+    <a href="/events" class="nav-item"><img src="/static/icons/news.png"><span>Новости</span></a>
+  </nav>
 
   <script>
+    document.getElementById('file').addEventListener('change', () => {
+      const fileInput = document.getElementById('file');
+      const fileNameDisplay = document.getElementById('file-name');
+      if (fileInput.files.length > 0) {
+        fileNameDisplay.textContent = "Выбран файл: " + fileInput.files[0].name;
+        fileNameDisplay.style.display = 'block';
+      } else {
+        fileNameDisplay.textContent = "";
+        fileNameDisplay.style.display = 'none';
+      }
+    });
+
+    function chooseSource(type) {
+      document.getElementById('start-screen').style.display = 'none';
+      if (type === 'file') {
+        document.getElementById('upload-screen').style.display = 'block';
+      } else {
+        document.getElementById('input-screen').style.display = 'block';
+      }
+    }
+
+    function goBack() {
+      document.getElementById('upload-screen').style.display = 'none';
+      document.getElementById('input-screen').style.display = 'none';
+      document.getElementById('start-screen').style.display = 'flex';
+    }
+
+    function reset() {
+      document.getElementById('result-screen').style.display = 'none';
+      document.getElementById('text').value = '';
+      document.getElementById('file').value = '';
+      document.getElementById('output').innerHTML = '';
+      document.getElementById('file-name').style.display = 'none';
+      document.getElementById('start-screen').style.display = 'flex';
+    }
+
     async function compress() {
-      const text = document.getElementById('text').value;
-      const filename = document.getElementById('filename').value || 'summary';
+      const text = document.getElementById('text')?.value.trim();
+      const fileInput = document.getElementById('file');
+      const output = document.getElementById('output');
+      const downloadBtn = document.getElementById('download-btn');
+      output.innerHTML = '';
+
+      let formData = new FormData();
+      formData.append('filename', 'summary');
+
+      if (fileInput && fileInput.files.length > 0) {
+        formData.append('file', fileInput.files[0]);
+      } else if (text) {
+        formData.append('text', text);
+      } else {
+        alert("❗ Введите текст или загрузите файл.");
+        return;
+      }
 
       const res = await fetch('/api/compress', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, filename })
+        body: formData
       });
 
       const data = await res.json();
-      const list = document.getElementById('output');
-      list.innerHTML = '';
-      data.summary.forEach(line => {
-        const li = document.createElement('li');
-        li.textContent = line;
-        list.appendChild(li);
-      });
+      if (data.summary) {
+        output.innerHTML = data.summary.map(line => `<p>${line}</p>`).join('');
 
-      alert("✅ Документ сохранён: " + data.file);
+        document.getElementById('input-screen').style.display = 'none';
+        document.getElementById('upload-screen').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+
+        downloadBtn.onclick = () => {
+          window.location.href = '/api/download/summary.docx';
+        };
+      } else {
+        alert("❌ Ошибка при обработке текста.");
+      }
     }
   </script>
+
 </body>
 </html>

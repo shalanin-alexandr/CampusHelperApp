@@ -1,5 +1,14 @@
 import json
 import os
+from datetime import datetime
+import sys
+
+COURSE_GROUPS = {
+    "1": ["РС 02-25"],
+    "2": ["РС 02-24"],
+    "3": ["РС 02-23"],
+    "4": ["ПО6"]
+}
 
 class GradeEntry:
     def __init__(self, student, subject, grade, grade_type, date):
@@ -8,9 +17,6 @@ class GradeEntry:
         self.grade = grade
         self.grade_type = grade_type
         self.date = date
-
-    def __str__(self):
-        return f"{self.date} | {self.student} | {self.subject} | {self.grade} ({self.grade_type})"
 
     def to_dict(self):
         return {
@@ -31,10 +37,15 @@ class GradeEntry:
             data["date"]
         )
 
+    def __str__(self):
+        return f"{self.date} | {self.student} | {self.subject} | {self.grade} ({self.grade_type})"
+
 class Journal:
-    def __init__(self):
+    def __init__(self, filename):
+        self.filename = filename
         self.entries = []
-        self.filename = "journal.json"
+        self.students = []
+        self.subjects = []
         self.load()
 
     def add_grade(self, student, subject, grade, grade_type, date):
@@ -43,38 +54,124 @@ class Journal:
         self.save()
         print("Оценка добавлена.")
 
-    def show_grades(self, student=None, subject=None, grade_type=None):
-        print("\nЖурнал оценок:")
-        for entry in self.entries:
-            if (student is None or entry.student == student) and \
-               (subject is None or entry.subject == subject) and \
-               (grade_type is None or entry.grade_type == grade_type):
-                print(entry)
-
     def edit_grade(self, student, date, new_grade):
-        found = False
         for entry in self.entries:
             if entry.student == student and entry.date == date:
-                print(f"Старое значение: {entry}")
                 entry.grade = new_grade
                 self.save()
-                print(f"Оценка обновлена: {entry}")
-                found = True
-        if not found:
-            print("Оценка не найдена. Проверь имя и дату.")
+                print("Оценка изменена.")
+                return
+        print(" Оценка не найдена.")
+
+    def show_grades(self):
+        if not self.entries:
+            print("Оценок нет.")
+        else:
+            for entry in self.entries:
+                print(entry)
+
+    def show_monthly_average(self, student):
+        month = input("Введите месяц (мм): ").strip()
+        year = input("Введите год (гггг): ").strip()
+        filtered = [e for e in self.entries if e.student == student and e.date.endswith(f"{month}.{year}")]
+        grades = [int(e.grade) for e in filtered if e.grade.isdigit()]
+        if grades:
+            avg = sum(grades) / len(grades)
+            print(f" Средний балл за {month}.{year}: {avg:.2f}")
+        else:
+            print("Нет оценок за указанный месяц.")
+
+    def add_student(self, name):
+        if name not in self.students:
+            self.students.append(name)
+            self.save()
+            print(f"Ученик '{name}' добавлен.")
+        else:
+            print("Такой ученик уже есть.")
+
+    def delete_student_record(self, name):
+        if name in self.students:
+            self.students.remove(name)
+            self.save()
+            print(f"Ученик '{name}' удалён.")
+        else:
+            print("Такого ученика нет.")
+
+    def add_subject(self, subject):
+        if subject not in self.subjects:
+            self.subjects.append(subject)
+            self.save()
+            print(f"Предмет '{subject}' добавлен.")
+        else:
+            print("Такой предмет уже есть.")
+
+    def delete_subject_record(self, subject):
+        if subject in self.subjects:
+            self.subjects.remove(subject)
+            self.save()
+            print(f"Предмет '{subject}' удалён.")
+        else:
+            print("Такого предмета нет.")
 
     def save(self):
+        data = {
+            "entries": [e.to_dict() for e in self.entries],
+            "students": self.students,
+            "subjects": self.subjects
+        }
         with open(self.filename, "w", encoding="utf-8") as f:
-            json.dump([entry.to_dict() for entry in self.entries], f, ensure_ascii=False, indent=4)
+            json.dump(data, f, ensure_ascii=False, indent=4)
 
     def load(self):
         if os.path.exists(self.filename):
             with open(self.filename, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                self.entries = [GradeEntry.from_dict(entry) for entry in data]
+                self.entries = [GradeEntry.from_dict(e) for e in data.get("entries", [])]
+                self.students = data.get("students", [])
+                self.subjects = data.get("subjects", [])
+
+class JournalSystem:
+    def __init__(self):
+        self.journals = {}
+        for groups in COURSE_GROUPS.values():
+            for group in groups:
+                filename = f"{group.replace(' ', '_')}.json"
+                self.journals[group] = Journal(filename)
+
+    def select_group(self):
+        print("\nВыберите курс:")
+        for course_num in COURSE_GROUPS:
+            print(f"{course_num}. Курс {course_num}")
+        course = input("Введите номер курса: ").strip()
+        if course not in COURSE_GROUPS:
+            print("Неверный курс.")
+            return None
+
+        print("\nВыберите группу:")
+        groups = COURSE_GROUPS[course]
+        for i, group in enumerate(groups, 1):
+            print(f"{i}. {group}")
+        try:
+            index = int(input("Введите номер группы: "))
+            if 1 <= index <= len(groups):
+                return groups[index - 1]
+        except:
+            print("Неверный ввод.")
+        return None
+
+    def get_journal(self, group_name):
+        return self.journals.get(group_name)
 
 def main():
-    journal = Journal()
+    system = JournalSystem()
+    
+    group = system.select_group()
+    if not group:
+        print("Группа не выбрана. Выход.")
+        return
+
+    journal = system.get_journal(group)
+
     grade_type_map = {
         "1": "Обычная",
         "2": "ПР",
@@ -83,79 +180,65 @@ def main():
     }
 
     while True:
-        print("\nМеню:")
+        print(f"\nГруппа: {group}")
+        print("Меню:")
+        print("0. Сменить группу")
         print("1. Добавить оценку")
         print("2. Показать все оценки")
         print("3. Показать работы (ЛР и ПР)")
         print("4. Изменить оценку")
         print("5. Выход")
+        print("6. Показать средний балл за месяц")
+        print("7. Добавить ученика")
+        print("8. Удалить ученика")
+        print("9. Добавить предмет")
+        print("10. Удалить предмет")
 
-        choice = input("Выберите действие: ")
+        choice = input("Выберите действие: ").strip()
+        
+        if choice == "0":
+                print("Возврат к выбору группы.")
+                break 
 
         if choice == "1":
-            students = sorted(set(entry.student for entry in journal.entries))
+            if not journal.students or not journal.subjects:
+                print("Сначала добавьте учеников и предметы.")
+                continue
 
-            print("\nВы хотите:")
-            print("1 - Выбрать ученика из списка")
-            print("2 - Ввести нового ученика")
-            student_choice = input("Введите номер: ")
+            print("\nУченики:")
+            for i, name in enumerate(journal.students, 1):
+                print(f"{i}. {name}")
+            try:
+                student = journal.students[int(input("Выберите номер ученика: ")) - 1]
+            except:
+                print("Неверный ввод.")
+                continue
 
-            if student_choice == "1" and students:
-                print("\nСуществующие ученики:")
-                for i, name in enumerate(students, 1):
-                    print(f"{i}. {name}")
-                while True:
-                    try:
-                        index = int(input("Выберите номер ученика: "))
-                        if 1 <= index <= len(students):
-                            student = students[index - 1]
-                            break
-                        else:
-                            print("Неверный номер. Попробуйте снова.")
-                    except ValueError:
-                        print("Введите число.")
-            else:
-                student = input("Введите имя нового ученика: ")
+            print("\nПредметы:")
+            for i, subj in enumerate(journal.subjects, 1):
+                print(f"{i}. {subj}")
+            try:
+                subject = journal.subjects[int(input("Выберите номер предмета: ")) - 1]
+            except:
+                print("Неверный ввод.")
+                continue
 
-            subjects = sorted(set(entry.subject for entry in journal.entries))
+            grade = input("Оценка: ").strip()
+            print("\nТип оценки:")
+            for k, v in grade_type_map.items():
+                print(f"{k}. {v}")
+            grade_type = grade_type_map.get(input("Выберите тип: ").strip())
+            if not grade_type:
+                print("Неверный тип.")
+                continue
 
-            print("\nВы хотите:")
-            print("1 - Выбрать предмет из списка")
-            print("2 - Ввести новый предмет")
-            subject_choice = input("Введите номер: ")
+            date = input("Введите дату (дд.мм.гггг): ").strip()
+            try:
+                datetime.strptime(date, "%d.%m.%Y")
+            except:
+                print("Неверный формат даты.")
+                continue
 
-            if subject_choice == "1" and subjects:
-                print("\nСуществующие предметы:")
-                for i, subj in enumerate(subjects, 1):
-                    print(f"{i}. {subj}")
-                while True:
-                    try:
-                        index = int(input("Выберите номер предмета: "))
-                        if 1 <= index <= len(subjects):
-                            subject = subjects[index - 1]
-                            break
-                        else:
-                            print("Неверный номер. Попробуйте снова.")
-                    except ValueError:
-                        print("Введите число.")
-            else:
-                subject = input("Введите название нового предмета: ")
-            grade = input("Оценка: ")
-
-            while True:
-                print("\nВыберите тип оценки:")
-                print("1 - Обычная")
-                print("2 - ПР (Практическая работа)")
-                print("3 - ЛР (Лабораторная работа)")
-                print("4 - Не сдал")
-                type_choice = input("Введите номер: ")
-                if type_choice in grade_type_map:
-                    grade_type = grade_type_map[type_choice]
-                    break
-                else:
-                    print("Неверный выбор. Попробуйте снова.")
-
-            date = input("Введите дату (в любом формате): ")
             journal.add_grade(student, subject, grade, grade_type, date)
 
         elif choice == "2":
@@ -168,36 +251,73 @@ def main():
                     print(entry)
 
         elif choice == "4":
-            students = sorted(set(entry.student for entry in journal.entries))
-            if not students:
-                print("Нет оценок для редактирования.")
-                continue
-
-            print("\nУченики с оценками:")
-            for i, name in enumerate(students, 1):
+            print("\nУченики:")
+            for i, name in enumerate(journal.students, 1):
                 print(f"{i}. {name}")
-
-            while True:
-                try:
-                    index = int(input("Выберите номер ученика: "))
-                    if 1 <= index <= len(students):
-                        student = students[index - 1]
-                        break
-                    else:
-                        print("Неверный номер. Попробуйте снова.")
-                except ValueError:
-                    print("Введите число.")
-
-            date = input("Дата оценки (в любом формате): ")
-            new_grade = input("Новая оценка: ")
+            try:
+                student = journal.students[int(input("Выберите номер ученика: ")) - 1]
+            except:
+                print("Неверный ввод.")
+                continue
+            date = input("Введите дату оценки (дд.мм.гггг): ").strip()
+            new_grade = input("Введите новую оценку: ").strip()
             journal.edit_grade(student, date, new_grade)
 
         elif choice == "5":
             print("Выход из программы.")
-            break
+            sys.exit()
+
+        elif choice == "6":
+            if not journal.students:
+                print("Список учеников пуст.")
+                continue
+            print("\nУченики:")
+            for i, name in enumerate(journal.students, 1):
+                print(f"{i}. {name}")
+            try:
+                student = journal.students[int(input("Выберите номер ученика: ")) - 1]
+                journal.show_monthly_average(student)
+            except:
+                print("Неверный ввод.")
+
+        elif choice == "7":
+            name = input("Введите имя ученика: ").strip()
+            journal.add_student(name)
+
+        elif choice == "8":
+            if not journal.students:
+                print("Список учеников пуст.")
+                continue
+            print("\nУченики:")
+            for i, name in enumerate(journal.students, 1):
+                print(f"{i}. {name}")
+            try:
+                index = int(input("Выберите номер ученика для удаления: "))
+                journal.delete_student_record(journal.students[index - 1])
+            except:
+                print("Неверный ввод.")
+
+        elif choice == "9":
+            subject = input("Введите название предмета: ").strip()
+            journal.add_subject(subject)
+
+        elif choice == "10":
+            if not journal.subjects:
+                print("Список предметов пуст.")
+                continue
+            print("\nПредметы:")
+            for i, subj in enumerate(journal.subjects, 1):
+                print(f"{i}. {subj}")
+            try:
+                index = int(input("Выберите номер предмета для удаления: "))
+                journal.delete_subject_record(journal.subjects[index - 1])
+            except:
+                print("Неверный ввод.")
 
         else:
-            print("Неверный выбор. Попробуйте снова.")
+            print("Неверный выбор.")
 
 if __name__ == "__main__":
-    main()
+    while True:
+        main()
+    

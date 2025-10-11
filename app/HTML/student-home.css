@@ -10,36 +10,36 @@ body {
   height: 100vh;
 }
 
-/* 🔝 Верхняя панель */
 .top-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 16px;
+  padding: 20px 24px;
   background-color: #ffffff;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 2px solid #b0b0b0;
   position: fixed;
   top: 0;
   width: 100%;
-  max-width: 100%;
   box-sizing: border-box;
   z-index: 10;
 }
 
-/* 🛠️ Кнопки в тулбаре */
 .icon-button {
+  width: 44px !important;
+  height: 44px !important;
   display: flex;
   align-items: center;
   justify-content: center;
-  max-width: 40px;
-  overflow: hidden;
 }
 
 .icon-button img {
-  width: 24px;
-  height: 24px;
+  width: 33px !important;
+  height: 33px !important;
   object-fit: contain;
 }
+
+
+
 
 /* 👋 Центральная часть */
 .main-content {
@@ -81,7 +81,7 @@ body {
   justify-content: center;
   text-decoration: none;
   color: #000000;
-  font-size: 12px;
+  font-size: 13px; /* ⬅️ Было 12px */
   padding: 6px 0;
   transition: all 0.2s ease;
   position: relative;
@@ -89,8 +89,8 @@ body {
 
 /* 🖼️ Иконки */
 .nav-item img {
-  width: 28px;
-  height: 28px;
+  width: 32px; /* ⬅️ Было 28px */
+  height: 32px;
   margin-bottom: 4px;
 }
 
@@ -100,6 +100,7 @@ body {
   border-radius: 12px;
   color: #007bff;
 }
+
 
 /* 📱 Адаптация под планшеты */
 @media (min-width: 600px) {

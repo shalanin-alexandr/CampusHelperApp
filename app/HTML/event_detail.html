@@ -3,60 +3,54 @@
 <head>
   <meta charset="UTF-8">
   <title>{{ event.title }}</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #f4f6f8;
-      padding: 2em;
-      max-width: 800px;
-      margin: auto;
-    }
-    .event-header {
-      text-align: center;
-      margin-bottom: 2em;
-    }
-    .event-header h1 {
-      font-size: 2em;
-      margin-bottom: 0.2em;
-    }
-    .event-date {
-      color: #888;
-      font-size: 0.95em;
-    }
-    .event-image {
-      width: 100%;
-      max-height: 400px;
-      object-fit: cover;
-      border-radius: 12px;
-      margin-bottom: 2em;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    }
-    .event-content {
-      background: white;
-      padding: 1.5em;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      line-height: 1.6;
-    }
-    .event-content h2 {
-      margin-top: 1em;
-      font-size: 1.4em;
-    }
-    .event-content p {
-      margin: 0.8em 0;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/html-static/event-detail.css">
 </head>
 <body>
-  <div class="event-header">
-    <h1>{{ event.title }}</h1>
-    <div class="event-date">📅 {{ event.date }}</div>
+
+  <!-- 🔙 Кнопка назад -->
+  <div class="back-button">
+    <a href="/events">
+      <img src="/static/icons/backto.png" alt="Назад">
+    </a>
   </div>
 
-  <img class="event-image" src="{{ event.image }}" alt="Изображение события">
+  <main class="main-content">
+    <div class="event-header">
+      <h1>{{ event.title }}</h1>
+      <div class="event-date">📅 {{ event.date }}</div>
+    </div>
 
-  <div class="event-content">
-    {{ event.content | safe }}
-  </div>
+    <img class="event-image" src="{{ event.image }}" alt="Изображение события">
+
+    <div class="event-content">
+      {{ event.content | safe }}
+    </div>
+  </main>
+
+  <!-- 🔽 Нижняя навигация -->
+  <nav class="bottom-nav">
+    <a href="/journal" class="nav-item">
+      <img src="/static/icons/journal.png" alt="Журнал">
+      <span>Журнал</span>
+    </a>
+    <a href="/schedule" class="nav-item">
+      <img src="/static/icons/schedule.png" alt="Расписание">
+      <span>Расписание</span>
+    </a>
+    <a href="/student" class="nav-item">
+      <img src="/static/icons/home.png" alt="Главная">
+      <span>Главная</span>
+    </a>
+    <a href="/tools" class="nav-item">
+      <img src="/static/icons/tools.png" alt="Инструменты">
+      <span>Инструменты</span>
+    </a>
+    <a href="/events" class="nav-item active">
+      <img src="/static/icons/news.png" alt="Новости">
+      <span>Новости</span>
+    </a>
+  </nav>
+
 </body>
 </html>

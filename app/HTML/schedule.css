@@ -68,7 +68,40 @@ tr.comment {
   margin-top: 40px;
 }
 
-/* 🔽 Нижняя навигация — как на главной */
+/* 🔘 Переключатель табов */
+.tab-switcher {
+  display: flex;
+  width: 100%;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px #dee2e6;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 14px 0;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  background-color: #f1f3f5;
+  color: #343a40;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  text-align: center;
+}
+
+.tab-button:not(:last-child) {
+  border-right: 1px solid #dee2e6;
+}
+
+.tab-button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+
+/* 🔽 Нижняя навигация */
 .bottom-nav {
   display: flex;
   justify-content: space-around;
@@ -108,4 +141,47 @@ tr.comment {
   background-color: #e6f0ff;
   border-radius: 12px;
   color: #007bff;
+}
+
+/* 🔔 Таблица звонков */
+.bells-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: white;
+  margin-bottom: 30px;
+  font-size: 15px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px #dee2e6;
+}
+
+.bells-table th,
+.bells-table td {
+  border: 1px solid #dee2e6;
+  padding: 12px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.bells-table th {
+  background-color: #e9ecef;
+  font-weight: bold;
+}
+
+.bells-table tr.comment {
+  background-color: #d1ecf1;
+  font-style: italic;
+}
+
+/* 📱 Адаптация под мобильные */
+@media (max-width: 480px) {
+  .bells-table td {
+    font-size: 14px;
+    padding: 10px 6px;
+  }
+
+  .bells-table th {
+    font-size: 14px;
+  }
 }
