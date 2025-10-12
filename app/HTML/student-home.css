@@ -14,7 +14,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
+  padding: 12px 20px; /* 🔽 уменьшено */
   background-color: #ffffff;
   border-bottom: 2px solid #b0b0b0;
   position: fixed;
@@ -25,20 +25,18 @@ body {
 }
 
 .icon-button {
-  width: 44px !important;
-  height: 44px !important;
+  width: 36px !important; /* 🔽 уменьшено */
+  height: 36px !important;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .icon-button img {
-  width: 33px !important;
-  height: 33px !important;
+  width: 26px !important; 
+  height: 26px !important;
   object-fit: contain;
 }
-
-
 
 
 /* 👋 Центральная часть */

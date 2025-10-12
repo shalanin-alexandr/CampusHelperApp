@@ -30,9 +30,16 @@ h2 {
   font-size: 20px;
 }
 
+/* 📦 Обёртка таблицы */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* 📋 Таблица */
 table {
-  width: 100%;
+  min-width: 100%;
   border-collapse: separate;
   border-spacing: 0;
   background-color: white;
@@ -99,7 +106,6 @@ tr.comment {
   background-color: #007bff;
   color: white;
 }
-
 
 /* 🔽 Нижняя навигация */
 .bottom-nav {
@@ -174,14 +180,39 @@ tr.comment {
   font-style: italic;
 }
 
+.room {
+  font-size: 13px;
+  color: #6c757d;
+  margin-top: 4px;
+}
+
+
 /* 📱 Адаптация под мобильные */
 @media (max-width: 480px) {
-  .bells-table td {
+  .bells-table td,
+  .bells-table th {
     font-size: 14px;
     padding: 10px 6px;
   }
 
-  .bells-table th {
+  table {
     font-size: 14px;
+  }
+
+  th, td {
+    padding: 10px 8px;
+  }
+
+  .tab-button {
+    font-size: 14px;
+    padding: 12px 0;
+  }
+
+  .main-content h1 {
+    font-size: 20px;
+  }
+
+  h2 {
+    font-size: 18px;
   }
 }

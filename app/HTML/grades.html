@@ -1,105 +1,73 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>🎓 Калькулятор оценок</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #f0f4f8;
-      padding: 2em;
-      text-align: center;
-    }
-    h1 {
-      margin-bottom: 1em;
-    }
-    .grade-buttons button {
-      margin: 0.3em;
-      padding: 0.5em 1em;
-      font-size: 1.2em;
-      cursor: pointer;
-    }
-    .output {
-      margin-top: 2em;
-      font-size: 1.2em;
-    }
-    .remove-btn {
-      margin-top: 1em;
-      background: #ff6666;
-      color: white;
-      border: none;
-      padding: 0.5em 1em;
-      cursor: pointer;
-    }
-    ul#grade-list {
-      list-style: none;
-      padding: 0;
-      margin-top: 1em;
-    }
-    ul#grade-list li {
-      background: #ffffff;
-      margin: 0.3em auto;
-      padding: 0.5em 1em;
-      width: fit-content;
-      border-radius: 6px;
-      box-shadow: 0 0 4px rgba(0,0,0,0.1);
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <title>Оценки</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <link rel="stylesheet" href="/html-static/grades.css" />
 </head>
 <body>
-  <h1>📊 Калькулятор оценок</h1>
+  <div class="app-container">
+    <header class="header">
+      <h1>Оценки</h1>
+    </header>
 
-  <div class="grade-buttons">
-    <p>Добавить оценку:</p>
-    <div id="buttons"></div>
+    <main class="main">
+      <div class="average-section">
+        <div class="average-card">
+          <div class="average-info">
+            <span class="average-label">Средний балл</span>
+            <span class="average-value" id="average-value">0.0</span>
+          </div>
+          <div class="average-circle" id="average-arrow">0</div>
+        </div>
+      </div>
+
+      <div class="history-section">
+        <div class="history-header">
+          <h3>История оценок</h3>
+          <div class="grades-count" id="grades-count">0</div>
+        </div>
+        <div class="grades-container">
+          <div class="grades-list" id="grades-list"></div>
+        </div>
+      </div>
+
+      <div class="buttons-actions-wrap">
+        <div class="grades-buttons" id="grades-buttons-wrap">
+          <div class="buttons-grid" id="grade-buttons" role="group" aria-label="Оценки 1-10"></div>
+        </div>
+
+        <div class="actions-section" id="actions-bottom">
+          <button class="action-btn delete-btn" id="delete-last-btn">
+            <span>↶ Удалить</span>
+          </button>
+          <button class="action-btn clear-btn" id="clear-btn">
+            <span>🗑️ Очистить</span>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <nav class="bottom-nav">
+      <a href="#" class="nav-item" title="Журнал">
+        <img src="/static/icons/journal.png" alt="Журнал">
+      </a>
+      <a href="/schedule" class="nav-item" title="Расписание">
+        <img src="/static/icons/schedule.png" alt="Расписание">
+      </a>
+      <a href="/student" class="nav-item active" title="Главная">
+        <img src="/static/icons/home.png" alt="Главная">
+      </a>
+      <a href="/tools" class="nav-item" title="Инструменты">
+        <img src="/static/icons/tools.png" alt="Инструменты">
+      </a>
+      <a href="/events" class="nav-item" title="Новости">
+        <img src="/static/icons/news.png" alt="Новости">
+      </a>
+    </nav>
   </div>
 
-  <button class="remove-btn" onclick="removeLast()">Удалить последнюю</button>
-
-  <div class="output">
-    <p id="average">Средняя: —</p>
-    <p id="count">Оценок: —</p>
-    <p>Введённые оценки:</p>
-    <ul id="grade-list"></ul>
-  </div>
-
-  <script>
-    function updateGrades() {
-      fetch('/api/grades')
-        .then(res => res.json())
-        .then(data => {
-          document.getElementById('average').textContent = `Средняя: ${data.average}`;
-          document.getElementById('count').textContent = `Оценок: ${data.count}`;
-
-          const list = document.getElementById('grade-list');
-          list.innerHTML = '';
-
-          data.grades.forEach((grade, index) => {
-            const item = document.createElement('li');
-            item.textContent = `#${index + 1}: ${grade}`;
-            list.appendChild(item);
-          });
-        });
-    }
-
-    function addGrade(value) {
-      fetch(`/api/grades/add/${value}`).then(updateGrades);
-    }
-
-    function removeLast() {
-      fetch('/api/grades/remove').then(updateGrades);
-    }
-
-    // Генерация кнопок от 1 до 10
-    const buttonsContainer = document.getElementById('buttons');
-    for (let i = 1; i <= 10; i++) {
-      const btn = document.createElement('button');
-      btn.textContent = i;
-      btn.onclick = () => addGrade(i);
-      buttonsContainer.appendChild(btn);
-    }
-
-    updateGrades(); // начальная загрузка
-  </script>
+  <script src="/html-static/grades.js"></script>
 </body>
 </html>

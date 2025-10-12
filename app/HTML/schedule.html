@@ -21,38 +21,41 @@
       {% if schedule_by_day %}
         {% for day, schedule in schedule_by_day.items() %}
           <h2>{{ day }}</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Пара</th>
-                <th>Время</th>
-                <th>Предмет</th>
-                <th>Аудитория</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for item in schedule %}
-                {% if item.comment %}
-                  <tr class="comment">
-                    <td colspan="4">{{ item.comment }}</td>
-                  </tr>
-                {% else %}
-                  <tr class="{% if item.replaced_subject %}replacement{% endif %}">
-                    <td>{{ item.pair }}</td>
-                    <td>{{ item.time }}</td>
-                    <td>
-                      {% if item.replaced_subject %}
-                        <del>{{ item.replaced_subject }}</del> → <strong>{{ item.subject }}</strong>
-                      {% else %}
-                        {{ item.subject }}
-                      {% endif %}
-                    </td>
-                    <td>{{ item.room }}</td>
-                  </tr>
-                {% endif %}
-              {% endfor %}
-            </tbody>
-          </table>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Пара</th>
+                  <th>Время</th>
+                  <th>Предмет</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in schedule %}
+                  {% if item.comment %}
+                    <tr class="comment">
+                      <td colspan="3">{{ item.comment }}</td>
+                    </tr>
+                  {% else %}
+                    <tr class="{% if item.replaced_subject %}replacement{% endif %}">
+                      <td>{{ item.pair }}</td>
+                      <td>{{ item.time }}</td>
+                      <td>
+                        {% if item.replaced_subject %}
+                          <del>{{ item.replaced_subject }}</del> → <strong>{{ item.subject }}</strong>
+                        {% else %}
+                          {{ item.subject }}
+                        {% endif %}
+                        {% if item.room %}
+                          <div class="room">{{ item.room }}</div>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endif %}
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
         {% endfor %}
       {% else %}
         <p class="empty">Нет данных для отображения.</p>
@@ -62,58 +65,59 @@
     <!-- 🔔 Блок звонков -->
     <div id="bells-tab" style="display: none;">
       <h1>Расписание звонков</h1>
-<table class="bells-table">
-  <thead>
-    <tr>
-      <th>№ пары</th>
-      <th>Пн–Пт</th>
-      <th>Суббота</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>1</td>
-      <td>08:00–08:45<br>08:55–09:40</td>
-      <td>08:00–08:45<br>08:55–09:40</td>
-    </tr>
-    <tr>
-      <td>2</td>
-      <td>09:50–10:35<br>10:45–11:30</td>
-      <td>09:50–10:35<br>10:45–11:30</td>
-    </tr>
-    <tr class="comment">
-      <td>ОБЕД</td>
-      <td>11:30–12:10</td>
-      <td>11:30–11:50</td>
-    </tr>
-    <tr>
-      <td>3</td>
-      <td>12:10–12:55<br>13:05–13:50</td>
-      <td>11:50–12:35<br>12:45–13:30</td>
-    </tr>
-    <tr>
-      <td>4</td>
-      <td>14:00–14:45<br>14:55–15:40</td>
-      <td></td>
-    </tr>
-    <tr class="comment">
-      <td>ОБЕД</td>
-      <td>15:40–16:00</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>5</td>
-      <td>16:00–16:45<br>16:55–17:40</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>6</td>
-      <td>17:50–18:35<br>18:45–19:30</td>
-      <td></td>
-    </tr>
-  </tbody>
-</table>
-
+      <div class="table-wrapper">
+        <table class="bells-table">
+          <thead>
+            <tr>
+              <th>№ пары</th>
+              <th>Пн–Пт</th>
+              <th>Суббота</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>08:00–08:45<br>08:55–09:40</td>
+              <td>08:00–08:45<br>08:55–09:40</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>09:50–10:35<br>10:45–11:30</td>
+              <td>09:50–10:35<br>10:45–11:30</td>
+            </tr>
+            <tr class="comment">
+              <td>ОБЕД</td>
+              <td>11:30–12:10</td>
+              <td>11:30–11:50</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>12:10–12:55<br>13:05–13:50</td>
+              <td>11:50–12:35<br>12:45–13:30</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>14:00–14:45<br>14:55–15:40</td>
+              <td></td>
+            </tr>
+            <tr class="comment">
+              <td>ОБЕД</td>
+              <td>15:40–16:00</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>16:00–16:45<br>16:55–17:40</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>17:50–18:35<br>18:45–19:30</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </main>
 

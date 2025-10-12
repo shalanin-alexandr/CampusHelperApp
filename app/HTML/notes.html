@@ -1,122 +1,92 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>🗒️ Заметки и напоминания</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #f8f9fa;
-      padding: 2em;
-      max-width: 800px;
-      margin: auto;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 1em;
-    }
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5em;
-      margin-bottom: 2em;
-    }
-    input, select, button {
-      padding: 0.5em;
-      font-size: 1em;
-    }
-    .note {
-      background: #fff;
-      padding: 1em;
-      margin-bottom: 1em;
-      border-radius: 6px;
-      box-shadow: 0 0 4px rgba(0,0,0,0.1);
-    }
-    .note.done {
-      opacity: 0.6;
-      text-decoration: line-through;
-    }
-    .note-actions {
-      margin-top: 0.5em;
-    }
-    .note-actions button {
-      margin-right: 0.5em;
-      padding: 0.3em 0.6em;
-      font-size: 0.9em;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <title>🗒️ Заметки</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/html-static/notes.css" />
 </head>
 <body>
-  <h1>🗓️ Мои заметки</h1>
 
-  <form id="note-form">
-    <input type="text" id="text" placeholder="Текст заметки" required>
-    <input type="datetime-local" id="datetime" required>
-    <select id="repeat">
-      <option value="none">Без повторения</option>
-      <option value="daily">Каждый день</option>
-      <option value="weekly">Раз в неделю</option>
-      <option value="weekdays">По будням</option>
-    </select>
-    <button type="submit">Создать заметку</button>
-  </form>
+  <section id="view-notes" class="screen visible">
+    <div class="top-bar">
+      <h1>Мои заметки</h1>
+      <button id="create-note-btn" class="icon-button">
+        <img src="/static/icons/plus.png" alt="Создать" />
+      </button>
+    </div>
+    <div class="notes-container" id="notes-list"></div>
+    <div class="empty-message" id="empty-message">Записей пока нет. Создайте новую!</div>
+  </section>
 
-  <div id="notes"></div>
+  <section id="read-note" class="screen">
+    <div class="top-bar">
+      <button id="back-from-read-btn" class="icon-button">
+        <img src="/static/icons/backto.png" alt="Назад" />
+      </button>
+      <h1 id="read-mode-title">Заметка</h1>
+      <button id="edit-from-read-btn" class="icon-button">
+        <img src="/static/icons/edit.png" alt="Редактировать" />
+      </button>
+    </div>
+    <div class="note-view">
+      <div class="note-icon-large" id="read-note-icon">📝</div>
+      <h2 id="read-note-title">Заголовок</h2>
+      <p id="read-note-text">Текст заметки...</p>
+    </div>
+  </section>
 
-  <script>
-    async function loadNotes() {
-      const res = await fetch('/api/notes');
-      const notes = await res.json();
-      const container = document.getElementById('notes');
-      container.innerHTML = '';
+  <section id="edit-note" class="screen">
+    <div class="top-bar">
+      <button id="back-btn" class="icon-button">
+        <img src="/static/icons/backto.png" alt="Назад" />
+      </button>
+      <h1 id="edit-mode-title">Новая заметка</h1>
+    </div>
+    <form id="note-form">
+      <div class="icon-picker">
+        <button type="button" id="icon-toggle-btn">🧠 Выбрать иконку</button>
+        <div class="icon-options" id="icon-options">
+          <button type="button" class="icon-choice">🧠</button>
+          <button type="button" class="icon-choice">📌</button>
+          <button type="button" class="icon-choice">✅</button>
+          <button type="button" class="icon-choice">🔔</button>
+          <button type="button" class="icon-choice">📚</button>
+          <button type="button" class="icon-choice">💡</button>
+        </div>
+        <input type="hidden" id="note-icon" />
+      </div>
 
-      notes.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+      <input type="text" id="note-title" placeholder="Название заметки" required />
+      <textarea id="note-text" placeholder="Текст заметки" rows="10" required></textarea>
 
-      for (const note of notes) {
-        const div = document.createElement('div');
-        div.className = 'note' + (note.status === 'done' ? ' done' : '');
-        div.innerHTML = `
-          <strong>${note.text}</strong><br>
-          ⏰ ${new Date(note.datetime).toLocaleString()}<br>
-          🔁 Повтор: ${note.repeat}<br>
-          🕒 Создано: ${new Date(note.created_at).toLocaleString()}
-          <div class="note-actions">
-            ${note.status === 'pending' ? `<button onclick="markDone('${note.id}')">Выполнено</button>` : ''}
-            <button onclick="deleteNote('${note.id}')">Удалить</button>
-          </div>
-        `;
-        container.appendChild(div);
-      }
-    }
+      <button type="submit" id="save-note-btn">Сохранить</button>
+    </form>
+  </section>
 
-    async function createNote(e) {
-      e.preventDefault();
-      const text = document.getElementById('text').value;
-      const datetime = document.getElementById('datetime').value;
-      const repeat = document.getElementById('repeat').value;
+  <nav class="bottom-nav">
+    <a href="#" class="nav-item">
+      <img src="/static/icons/journal.png" alt="Журнал" />
+      <span>Журнал</span>
+    </a>
+    <a href="/schedule" class="nav-item">
+      <img src="/static/icons/schedule.png" alt="Расписание" />
+      <span>Расписание</span>
+    </a>
+    <a href="/student" class="nav-item">
+      <img src="/static/icons/home.png" alt="Главная" />
+      <span>Главная</span>
+    </a>
+    <a href="/tools" class="nav-item active">
+      <img src="/static/icons/tools.png" alt="Инструменты" />
+      <span>Инструменты</span>
+    </a>
+    <a href="/events" class="nav-item">
+      <img src="/static/icons/news.png" alt="Новости" />
+      <span>Новости</span>
+    </a>
+  </nav>
 
-      await fetch('/api/notes/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, datetime, repeat })
-      });
-
-      document.getElementById('note-form').reset();
-      loadNotes();
-    }
-
-    async function markDone(id) {
-      await fetch(`/api/notes/done/${id}`, { method: 'POST' });
-      loadNotes();
-    }
-
-    async function deleteNote(id) {
-      await fetch(`/api/notes/delete/${id}`, { method: 'POST' });
-      loadNotes();
-    }
-
-    document.getElementById('note-form').addEventListener('submit', createNote);
-    loadNotes();
-  </script>
+  <script src="/html-static/note-page.js"></script>
 </body>
 </html>

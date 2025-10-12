@@ -4,13 +4,14 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import os, sys, uuid, json
 from datetime import datetime, timedelta
+from collections import OrderedDict
 
 
 # 📦 Импорты модулей
 sys.path.append(os.path.abspath('./schedule'))
 from schedule.excel_scraper import get_excel_schedule
-from schedule.doc_scraper import has_docx_url_changed, fetch_latest_docx_url, get_docx_schedule
-from schedule.schedule_merger import merge_schedules
+from schedule.doc_scraper import has_docx_url_changed, fetch_latest_docx_url, get_docx_schedule, get_available_replacement_days
+from schedule.schedule_merger import merge_schedules, normalize_day
 from grades.calculator import GradeTracker
 from notes.notes import get_all_notes, create_note, delete_note, mark_note_as_done, edit_note
 from events.users import authenticate, add_user
@@ -121,16 +122,19 @@ async def schedule_page(request: Request):
         tomorrow += timedelta(days=1)
     tomorrow_rus = weekday_map_eng_to_rus[tomorrow.strftime("%A")]
 
-    parsed_day_from_doc = None
+    from collections import OrderedDict
+
     if doc_schedule.get("schedule"):
-        parsed_day_from_doc = doc_schedule["schedule"][0].get("day")
+        all_days = get_available_replacement_days(doc_schedule)
+        sorted_days = sorted(all_days, key=lambda d: 0 if normalize_day(d) == "суббота" else 1)
+        if today_rus == "Воскресенье":
+            sorted_days = [d for d in sorted_days if normalize_day(d) != "суббота"]
+        target_days = sorted_days
+    else:
+        target_days = ["Суббота", "Понедельник"] if today_rus == "Суббота" else [tomorrow_rus]
 
-    target_days = [parsed_day_from_doc] if parsed_day_from_doc else (
-        ["Суббота", "Понедельник"] if today_rus == "Суббота" else [tomorrow_rus]
-    )
 
-    schedule_by_day = {}
-
+    schedule_by_day = OrderedDict()
     for target_day in target_days:
         filtered = {
             "group": excel_schedule["group"],
