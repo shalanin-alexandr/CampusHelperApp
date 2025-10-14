@@ -1,10 +1,28 @@
+:root {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #111111;
+  --bg-card: #1a1a1a;
+  --border: #333333;
+  --text-primary: #ffffff;
+  --text-secondary: #b8b8b8;
+  --muted: rgba(255,255,255,0.03);
+  --accent: #007bff;
+  --safe-bottom: env(safe-area-inset-bottom);
+}
+
 /* 🌐 Общие стили */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
-  background: #f4f6f8;
-  color: #000000;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(180deg, var(--bg-secondary), var(--bg-primary));
+  color: var(--text-primary);
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -21,12 +39,17 @@ body {
 .back-button img {
   width: 32px;
   height: 32px;
+  filter: brightness(1.05);
+  background: var(--bg-card);
+  border-radius: 8px;
+  padding: 6px;
+  border: 1px solid var(--border);
 }
 
 /* 👋 Контент */
 .main-content {
   flex: 1;
-  padding: 70px 16px 80px;
+  padding: 70px 16px calc(80px + var(--safe-bottom));
   overflow-y: auto;
 }
 
@@ -39,11 +62,13 @@ body {
 .event-header h1 {
   font-size: 22px;
   margin-bottom: 6px;
-  color: #007bff;
+  color: var(--accent);
+  font-weight: 700;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
 }
 
 .event-date {
-  color: #6c757d;
+  color: var(--text-secondary);
   font-size: 14px;
 }
 
@@ -54,26 +79,59 @@ body {
   object-fit: cover;
   border-radius: 12px;
   margin-bottom: 20px;
-  box-shadow: 0 0 0 1px #dee2e6;
+  background: var(--muted);
+  display: block;
+  border: 1px solid var(--border);
 }
 
 /* 📦 Контент карточки */
 .event-content {
-  background: white;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   padding: 16px;
   border-radius: 12px;
-  box-shadow: 0 0 0 1px #dee2e6;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
   line-height: 1.6;
   font-size: 15px;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
 }
 
 .event-content h2 {
   margin-top: 1em;
   font-size: 16px;
+  color: var(--text-primary);
 }
 
 .event-content p {
   margin: 0.8em 0;
+  color: var(--text-secondary);
+}
+
+/* пустые состояния */
+.empty {
+  text-align: center;
+  font-size: 16px;
+  margin-top: 40px;
+  color: var(--text-secondary);
+}
+
+/* 📱 Адаптация под мобильные */
+@media (max-width: 480px) {
+  .event-image {
+    max-height: 240px;
+  }
+
+  .event-header h1 {
+    font-size: 20px;
+  }
+
+  .event-content h2 {
+    font-size: 15px;
+  }
+
+  .event-content p {
+    font-size: 14px;
+  }
 }
 
 /* 🔽 Нижняя навигация */
@@ -82,13 +140,14 @@ body {
   justify-content: space-around;
   align-items: center;
   padding: 8px 0;
-  background-color: #ffffff;
-  border-top: 1px solid #e0e0e0;
-  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
+  background-color: var(--bg-card);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -6px 18px rgba(0,0,0,0.6);
   position: fixed;
   bottom: 0;
   width: 100%;
   z-index: 10;
+  height: calc(56px + var(--safe-bottom));
 }
 
 /* 🔘 Кнопки навигации */
@@ -100,21 +159,24 @@ body {
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 13px;
   padding: 6px 0;
   transition: all 0.2s ease;
   position: relative;
+  border-radius: 8px;
 }
 
 .nav-item img {
   width: 32px;
   height: 32px;
   margin-bottom: 4px;
+  filter: brightness(1.05);
 }
 
 .nav-item.active {
-  background-color: #e6f0ff;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
   border-radius: 12px;
-  color: #007bff;
+  color: var(--accent);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
 }

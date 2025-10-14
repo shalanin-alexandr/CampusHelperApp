@@ -1,22 +1,39 @@
-/* 🌐 Общие стили */
-body {
+:root {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #111111;
+  --bg-card: #1a1a1a;
+  --border: #333;
+  --text-primary: #ffffff;
+  --text-secondary: #888;
+  --accent: #007bff; /* оставил акцент из второй темы */
+  --top-border: rgba(255,255,255,0.04);
+  --safe-bottom: env(safe-area-inset-bottom);
+}
+
+/* 🌐 Общие стили (на основе первой темы, сохраняя структуру второй) */
+* {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
-  background-color: #ffffff;
-  color: #000000;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
 
+/* Верхняя панель (top-bar) — использует тёмный фон и лёгкую границу */
 .top-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 20px; /* 🔽 уменьшено */
-  background-color: #ffffff;
-  border-bottom: 2px solid #b0b0b0;
+  padding: 12px 20px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
   position: fixed;
   top: 0;
   width: 100%;
@@ -25,51 +42,59 @@ body {
 }
 
 .icon-button {
-  width: 36px !important; /* 🔽 уменьшено */
+  width: 36px !important;
   height: 36px !important;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
 }
 
 .icon-button img {
-  width: 26px !important; 
+  width: 26px !important;
   height: 26px !important;
   object-fit: contain;
+  filter: brightness(1.2);
 }
 
-
-/* 👋 Центральная часть */
+/* 👋 Центральная часть — центрирование контента, адаптация отступов под фиксированные top/bottom */
 .main-content {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 80px 20px 80px;
+  padding: 80px 20px calc(80px + var(--safe-bottom));
+  gap: 12px;
 }
 
+/* Заголовок с акцентным цветом, но на тёмном фоне — используем переменную accent */
 .main-content h1 {
   font-size: 24px;
-  color: #007bff;
+  color: var(--accent);
+  font-weight: 700;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
 }
 
-/* 🔽 Нижняя навигация */
+/* 🔽 Нижняя навигация — тёмная карточка, бордюр и безопасная зона */
 .bottom-nav {
   display: flex;
   justify-content: space-around;
   align-items: center;
   padding: 8px 0;
-  background-color: #ffffff;
-  border-top: 1px solid #e0e0e0;
-  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -6px 18px rgba(0,0,0,0.6);
   position: fixed;
   bottom: 0;
   width: 100%;
   z-index: 10;
+  height: calc(56px + var(--safe-bottom));
 }
 
-/* 🔘 Кнопки навигации */
+/* 🔘 Кнопки навигации — цвета и размеры под тёмную тему */
 .nav-item {
   flex: 1;
   min-width: 60px;
@@ -78,29 +103,70 @@ body {
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  color: #000000;
-  font-size: 13px; /* ⬅️ Было 12px */
+  color: var(--text-primary);
+  font-size: 13px;
   padding: 6px 0;
   transition: all 0.2s ease;
   position: relative;
+  border-radius: 8px;
 }
 
-/* 🖼️ Иконки */
 .nav-item img {
-  width: 32px; /* ⬅️ Было 28px */
+  width: 32px;
   height: 32px;
   margin-bottom: 4px;
+  filter: brightness(1.1);
 }
 
-/* 🔹 Активная кнопка — мягкая заливка и скругление */
+/* 🔹 Активная кнопка — мягкая заливка на тёмном фоне, округление и контрастный текст */
 .nav-item.active {
-  background-color: #e6f0ff;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
   border-radius: 12px;
-  color: #007bff;
+  color: var(--accent);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
 }
 
+/* Дополнительно: карточки, кнопки и основной визуальный стиль (из первой темы) */
 
-/* 📱 Адаптация под планшеты */
+/* Карточка среднего значения и её элементы для использования в main-content при необходимости */
+.average-card {
+  background: linear-gradient(135deg, var(--bg-card) 0%, #222 100%);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+  color: var(--text-primary);
+}
+
+/* Кнопки-иконки и элементы управления в центре */
+.action-btn {
+  padding: 12px 14px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.action-btn.primary {
+  background: linear-gradient(90deg, var(--accent), #2791ff);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Небольшие адаптивные правки */
 @media (min-width: 600px) {
   .main-content h1 {
     font-size: 28px;
@@ -110,4 +176,10 @@ body {
     width: 32px;
     height: 32px;
   }
+}
+
+@media (max-width: 360px) {
+  .icon-button { width: 32px !important; height: 32px !important; }
+  .icon-button img { width: 22px !important; height: 22px !important; }
+  .main-content h1 { font-size: 20px; }
 }

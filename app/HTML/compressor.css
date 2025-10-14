@@ -1,10 +1,25 @@
+:root {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #111111;
+  --bg-card: #1a1a1a;
+  --border: #333333;
+  --text-primary: #ffffff;
+  --text-secondary: #b8b8b8;
+  --muted: rgba(255,255,255,0.03);
+  --accent: #007bff;
+  --accent-strong: #28a745;
+  --safe-bottom: env(safe-area-inset-bottom);
+}
+
 /* 🌐 Общие стили */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
-  background-color: #f8f9fa;
-  color: #000000;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(180deg, var(--bg-secondary), var(--bg-primary));
+  color: var(--text-primary);
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -13,11 +28,12 @@ body {
 /* 👋 Контент */
 .main-content {
   flex: 1;
-  padding: 20px 16px 100px;
+  padding: 20px 16px calc(100px + var(--safe-bottom));
   overflow-y: auto;
+  background: transparent;
 }
 
-/* 🧠 Заголовок — выравнивание и отступ */
+/* 📌 Заголовок */
 .main-content h1 {
   position: relative;
   top: 0;
@@ -25,10 +41,10 @@ body {
   margin-bottom: 32px;
   font-size: 28px;
   text-align: center;
-  color: #007bff;
+  color: var(--accent);
   font-weight: 600;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
 }
-
 
 /* 🧩 Стартовый экран */
 #start-screen {
@@ -62,22 +78,26 @@ body {
   align-items: center;
   font-size: 16px;
   font-weight: 500;
-  transition: background-color 0.2s ease;
-  box-shadow: 0 0 0 1px #dee2e6;
+  transition: background-color 0.2s ease, transform 0.12s ease;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
 }
 
+.choice-tile:hover { transform: translateY(-4px); }
+
+/* тематические плитки — мягкие акценты */
 .choice-tile.file {
-  background-color: #e6f0ff;
-  color: #007bff;
+  background: linear-gradient(135deg, rgba(0,123,255,0.06), rgba(0,123,255,0.02));
+  border: 1px solid rgba(0,123,255,0.06);
+  color: var(--accent);
 }
 
 .choice-tile.text {
-  background-color: #fff3cd;
-  color: #856404;
-}
-
-.choice-tile:hover {
-  opacity: 0.95;
+  background: linear-gradient(135deg, rgba(255,193,7,0.06), rgba(255,193,7,0.02));
+  border: 1px solid rgba(255,193,7,0.04);
+  color: #ffd965;
 }
 
 .choice-tile::before {
@@ -85,6 +105,7 @@ body {
   font-size: 48px;
   display: block;
   margin-bottom: 12px;
+  filter: drop-shadow(0 6px 18px rgba(0,0,0,0.6));
 }
 
 /* ✍️ Ввод текста */
@@ -94,7 +115,9 @@ textarea {
   padding: 12px;
   margin-top: 16px;
   border-radius: 12px;
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  color: var(--text-primary);
   resize: vertical;
   min-height: 120px;
   box-sizing: border-box;
@@ -105,12 +128,13 @@ textarea {
   display: block;
   margin-top: 16px;
   font-size: 14px;
-  color: #555;
+  color: var(--text-secondary);
 }
 
 #upload-screen input[type="file"] {
   margin-top: 8px;
   font-size: 14px;
+  color: var(--text-primary);
 }
 
 /* 🔘 Кнопки */
@@ -122,42 +146,30 @@ button {
   border-radius: 12px;
   border: none;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.08s ease;
+  color: #fff;
+  background: linear-gradient(90deg, var(--accent), #2791ff);
 }
 
-button:hover {
-  opacity: 0.95;
-}
+button:hover { transform: translateY(-2px); }
 
-button[onclick="compress()"] {
-  background-color: #007bff;
-  color: white;
-}
-
-#download-btn {
-  background-color: #28a745;
-  color: white;
-}
-
-#download-btn:hover {
-  background-color: #218838;
-}
-
-button[onclick="reset()"] {
-  background-color: #ffc107;
-  color: #212529;
-}
+button[onclick="compress()"] { background: linear-gradient(90deg, var(--accent), #2791ff); }
+#compress-btn { background: linear-gradient(90deg, var(--accent-strong), #2fa84a); }
+#select-btn { background: linear-gradient(90deg, var(--accent), #0056b3); }
+#download-btn { background: linear-gradient(90deg, var(--accent-strong), #218838); }
+button[onclick="reset()"] { background: linear-gradient(90deg, #ffc107, #e0a800); color: #212529; }
 
 /* 📄 Результат */
 #result-screen h2 {
   margin-top: 32px;
   font-size: 18px;
-  color: #343a40;
+  color: var(--text-primary);
 }
 
 ul#output {
   margin-top: 12px;
   padding-left: 20px;
+  color: var(--text-secondary);
 }
 
 ul#output li {
@@ -166,6 +178,7 @@ ul#output li {
   line-height: 1.5;
 }
 
+/* Зоны загрузки и центрирования */
 .upload-center {
   display: flex;
   flex-direction: column;
@@ -178,45 +191,17 @@ ul#output li {
 
 .upload-icon {
   font-size: 80px;
-  color: #007bff;
+  color: var(--accent);
   transition: transform 0.3s ease;
 }
 
-.upload-icon:hover {
-  transform: scale(1.1);
-}
+.upload-icon:hover { transform: scale(1.1); }
 
-#file {
-  display: none;
-}
-
-#select-btn,
-#compress-btn {
-  background-color: #007bff;
-  color: white;
-  font-size: 16px;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-#compress-btn {
-  background-color: #28a745;
-}
-
-#select-btn:hover {
-  background-color: #0056b3;
-}
-
-#compress-btn:hover {
-  background-color: #218838;
-}
+#file { display: none; }
 
 .file-name {
   font-size: 15px;
-  color: #555;
+  color: var(--text-secondary);
   font-weight: 500;
   margin-top: -8px;
 }
@@ -224,12 +209,12 @@ ul#output li {
 .output-text {
   font-size: 16px;
   line-height: 1.6;
-  color: #333;
+  color: var(--text-primary);
   margin-top: 16px;
   white-space: pre-line;
 }
 
-
+/* Навигация назад и отступы */
 .back-button {
   position: absolute;
   top: 16px;
@@ -237,45 +222,33 @@ ul#output li {
   z-index: 20;
   cursor: pointer;
   transition: transform 0.2s ease;
-  padding: 4px;
+  padding: 6px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
 }
 
 .back-button img {
   width: 32px;
   height: 32px;
+  filter: brightness(1.05);
 }
 
-/* 🧱 Отступ для контента под кнопкой */
+/* Отступ для экранов с верхней кнопкой */
 #input-screen,
-#upload-screen {
-  position: relative;
-  padding-top: 64px; /* отступ от верхнего края, чтобы не перекрывать кнопку */
-}
-
+#upload-screen { position: relative; padding-top: 64px; }
 
 /* 📱 Адаптация под узкие экраны */
 @media (max-width: 480px) {
-  .main-content h1 {
-    font-size: 20px;
-      }
+  .main-content h1 { font-size: 20px; }
 
-  .choice-tile {
-    font-size: 15px;
-    padding: 14px;
-  }
+  .choice-tile { font-size: 15px; padding: 14px; }
 
-  .choice-tile::before {
-    font-size: 40px;
-  }
+  .choice-tile::before { font-size: 40px; }
 
-  button {
-    font-size: 15px;
-    padding: 10px;
-  }
+  button { font-size: 15px; padding: 10px; }
 
-  ul#output li {
-    font-size: 14px;
-  }
+  ul#output li { font-size: 14px; }
 }
 
 /* 🔽 Нижняя навигация */
@@ -284,13 +257,14 @@ ul#output li {
   justify-content: space-around;
   align-items: center;
   padding: 8px 0;
-  background-color: #ffffff;
-  border-top: 1px solid #e0e0e0;
-  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
+  background-color: var(--bg-card);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -6px 18px rgba(0,0,0,0.6);
   position: fixed;
   bottom: 0;
   width: 100%;
   z-index: 10;
+  height: calc(56px + var(--safe-bottom));
 }
 
 .nav-item {
@@ -301,21 +275,19 @@ ul#output li {
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 13px;
   padding: 6px 0;
   transition: all 0.2s ease;
   position: relative;
+  border-radius: 8px;
 }
 
-.nav-item img {
-  width: 32px;
-  height: 32px;
-  margin-bottom: 4px;
-}
+.nav-item img { width: 32px; height: 32px; margin-bottom: 4px; filter: brightness(1.05); }
 
 .nav-item.active {
-  background-color: #e6f0ff;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
   border-radius: 12px;
-  color: #007bff;
+  color: var(--accent);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
 }

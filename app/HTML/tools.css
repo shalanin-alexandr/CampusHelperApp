@@ -1,10 +1,31 @@
+:root {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #111111;
+  --bg-card: #1a1a1a;
+  --border: #333333;
+  --text-primary: #ffffff;
+  --text-secondary: #b8b8b8;
+  --muted: rgba(255,255,255,0.03);
+  --accent-blue: #007bff;
+  --accent-green: #28a745;
+  --accent-yellow: #ffc107;
+  --accent-red: #dc3545;
+  --safe-bottom: env(safe-area-inset-bottom);
+}
+
 /* 🌐 Общие стили */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
-  background-color: #f8f9fa;
-  color: #000000;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -13,15 +34,18 @@ body {
 /* 👋 Контент */
 .main-content {
   flex: 1;
-  padding: 20px 16px 80px;
+  padding: 20px 16px calc(80px + var(--safe-bottom));
   overflow-y: auto;
+  background: linear-gradient(180deg, var(--bg-secondary), var(--bg-primary));
 }
 
 .main-content h1 {
   text-align: center;
   margin-bottom: 24px;
   font-size: 24px;
-  color: #007bff;
+  color: var(--accent-blue);
+  font-weight: 700;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
 }
 
 /* 🧱 Список инструментов */
@@ -39,23 +63,33 @@ body {
   padding: 20px 20px 20px 100px;
   border-radius: 16px;
   text-decoration: none;
-  color: #000000;
+  color: var(--text-primary);
   height: 120px;
   overflow: hidden;
-  box-shadow: 0 0 0 1px #dee2e6;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
 }
 
-/* 🎨 Заливки по типу инструмента */
+/* 🎨 Заливки по типу инструмента — тёплые/мягкие акценты на тёмном фоне */
 .tool-block.compressor {
-  background: linear-gradient(135deg, rgba(0,123,255,0.1), rgba(0,123,255,0.05));
+  background: linear-gradient(135deg, rgba(0,123,255,0.08), rgba(0,123,255,0.03));
+  border: 1px solid rgba(0,123,255,0.08);
 }
 
 .tool-block.grades {
-  background: linear-gradient(135deg, rgba(40,167,69,0.1), rgba(40,167,69,0.05));
+  background: linear-gradient(135deg, rgba(40,167,69,0.06), rgba(40,167,69,0.02));
+  border: 1px solid rgba(40,167,69,0.05);
 }
 
 .tool-block.notes {
-  background: linear-gradient(135deg, rgba(255,193,7,0.1), rgba(255,193,7,0.05));
+  background: linear-gradient(135deg, rgba(255,193,7,0.06), rgba(255,193,7,0.02));
+  border: 1px solid rgba(255,193,7,0.04);
+}
+
+.tool-block.pomodoro {
+  background: linear-gradient(135deg, rgba(220,53,69,0.06), rgba(220,53,69,0.02));
+  border: 1px solid rgba(220,53,69,0.04);
 }
 
 /* 🖼️ Иконка инструмента */
@@ -64,46 +98,35 @@ body {
   bottom: -10px;
   left: -10px;
   transform: rotate(-10deg);
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 .tool-icon img {
   width: 100px;
   height: 100px;
   object-fit: contain;
+  filter: drop-shadow(0 6px 18px rgba(0,0,0,0.6));
 }
 
+/* Текст внутри плитки */
+.tool-text h2 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  color: var(--text-primary);
+  font-weight: 700;
+}
 
 .tool-text p {
   font-size: 14px;
   margin: 0;
-  color: #333;
+  color: var(--text-secondary);
 }
 
-.tool-block.compressor .tool-text h2 {
-  color: #007bff;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-}
-
-.tool-block.grades .tool-text h2 {
-  color: #28a745;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-}
-
-.tool-block.notes .tool-text h2 {
-  color: #ffc107;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-}
-
-.tool-block.pomodoro {
-  background: linear-gradient(135deg, rgba(220,53,69,0.1), rgba(220,53,69,0.05));
-}
-
-.tool-block.pomodoro .tool-text h2 {
-  color: #dc3545;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-}
-
+/* Специальные цвета заголовков для плиток */
+.tool-block.compressor .tool-text h2 { color: var(--accent-blue); }
+.tool-block.grades .tool-text h2     { color: var(--accent-green); }
+.tool-block.notes .tool-text h2      { color: var(--accent-yellow); color: #ffd965; }
+.tool-block.pomodoro .tool-text h2   { color: var(--accent-red); }
 
 /* 📱 Адаптация под узкие экраны */
 @media (max-width: 480px) {
@@ -132,13 +155,14 @@ body {
   justify-content: space-around;
   align-items: center;
   padding: 8px 0;
-  background-color: #ffffff;
-  border-top: 1px solid #e0e0e0;
-  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
+  background-color: var(--bg-card);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -6px 18px rgba(0,0,0,0.6);
   position: fixed;
   bottom: 0;
   width: 100%;
   z-index: 10;
+  height: calc(56px + var(--safe-bottom));
 }
 
 .nav-item {
@@ -149,21 +173,24 @@ body {
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 13px;
   padding: 6px 0;
   transition: all 0.2s ease;
   position: relative;
+  border-radius: 8px;
 }
 
 .nav-item img {
   width: 32px;
   height: 32px;
   margin-bottom: 4px;
+  filter: brightness(1.05);
 }
 
 .nav-item.active {
-  background-color: #e6f0ff;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
   border-radius: 12px;
-  color: #007bff;
+  color: var(--accent-blue);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
 }

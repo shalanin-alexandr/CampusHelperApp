@@ -57,11 +57,11 @@
   </main>
 
   <nav class="bottom-nav">
-    <a href="/journal" class="nav-item"><img src="/static/icons/journal.png"><span>Журнал</span></a>
-    <a href="/schedule" class="nav-item"><img src="/static/icons/schedule.png"><span>Расписание</span></a>
-    <a href="/student" class="nav-item"><img src="/static/icons/home.png"><span>Главная</span></a>
-    <a href="/tools" class="nav-item active"><img src="/static/icons/tools.png"><span>Инструменты</span></a>
-    <a href="/events" class="nav-item"><img src="/static/icons/news.png"><span>Новости</span></a>
+    <a href="/journal" class="nav-item"><img src="/static/icons/journal.png"></a>
+    <a href="/schedule" class="nav-item"><img src="/static/icons/schedule.png"></a>
+    <a href="/student" class="nav-item"><img src="/static/icons/home.png"></a>
+    <a href="/tools" class="nav-item active"><img src="/static/icons/tools.png"></a>
+    <a href="/events" class="nav-item"><img src="/static/icons/news.png"></a>
   </nav>
 
   <script>
@@ -69,7 +69,7 @@
       const fileInput = document.getElementById('file');
       const fileNameDisplay = document.getElementById('file-name');
       if (fileInput.files.length > 0) {
-        fileNameDisplay.textContent = "Выбран файл: " + fileInput.files[0].name;
+        fileNameDisplay.textContent = "Выбран файл: " + fileInput.files[0].name;         
         fileNameDisplay.style.display = 'block';
       } else {
         fileNameDisplay.textContent = "";
