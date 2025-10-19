@@ -5,7 +5,7 @@
   <title>Главный экран обучающегося</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/html-static/student-home.css">
-  <link rel="manifest" href="/html-static/manifest.json">
+  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#ffffff">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -16,15 +16,33 @@
     <a href="#" class="icon-button left">
       <img src="/static/icons/profile.png" alt="Профиль">
     </a>
-    <a href="#" class="icon-button right">
+    <a href="#" class="icon-button right" id="settings-btn">
       <img src="/static/icons/settings.png" alt="Настройки">
     </a>
   </header>
 
   <main class="main-content">
     <h1>🎓 Добро пожаловать!</h1>
-    <!-- Здесь будут функции позже -->
   </main>
+
+  <!-- 🔧 Всплывающее окно настроек -->
+  <div class="settings-overlay" id="settings">
+    <div class="settings-card">
+      <h2>⚙️ Настройки</h2>
+      <div class="social-icons">
+        <a href="mailto:sasha@example.com" target="_blank" class="social-icon">
+          <img src="/static/icons/mail.png" alt="Почта">
+        </a>
+        <a href="https://github.com/sasha" target="_blank" class="social-icon">
+          <img src="/static/icons/github.png" alt="GitHub">
+        </a>
+        <a href="https://t.me/sasha" target="_blank" class="social-icon">
+          <img src="/static/icons/telegram.png" alt="Telegram">
+        </a>
+      </div>
+      <button class="close-btn" id="close-settings">Закрыть</button>
+    </div>
+  </div>
 
   <nav class="bottom-nav">
     <a href="#" class="nav-item">
@@ -43,6 +61,26 @@
       <img src="/static/icons/news.png" alt="Новости">
     </a>
   </nav>
+
+  <script>
+    const settingsBtn = document.getElementById("settings-btn");
+    const settingsOverlay = document.getElementById("settings");
+    const closeBtn = document.getElementById("close-settings");
+
+    settingsBtn.addEventListener("click", () => {
+      settingsOverlay.classList.add("active");
+    });
+
+    closeBtn.addEventListener("click", () => {
+      settingsOverlay.classList.remove("active");
+    });
+
+    settingsOverlay.addEventListener("click", (e) => {
+      if (e.target === settingsOverlay) {
+        settingsOverlay.classList.remove("active");
+      }
+    });
+  </script>
 
 </body>
 </html>

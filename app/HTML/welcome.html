@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Campus Helper</title>
+  <link rel="stylesheet" href="/html-static/welcome.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Слайды -->
+    <section class="slide active">
+      <div class="slide-content">
+        <div class="mascot-container"></div>
+        <h1 class="app-title">📚 Campus Helper</h1>
+        <p class="app-subtitle">Твой личный помощник студента!</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-content">
+        <div class="icon">📅</div>
+        <h2>Расписание</h2>
+        <p>Получай актуальное расписание и замены для своей группы!</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-content">
+        <div class="icon">📰</div>
+        <h2>Новости</h2>
+        <p>Будь в курсе последних объявлений и событий колледжа!</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-content">
+        <div class="icon">📘</div>
+        <h2>Журнал (BETA)</h2>
+        <p>Отслеживай успеваемость и важные отметки.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-content">
+        <div class="icon">🛠️</div>
+        <h2>Инструменты</h2>
+        <p>Заметки, калькулятор оценок, пересказчик — всё в одном приложении!</p>
+      </div>
+    </section>
+
+    <!-- Регистрация -->
+    <section class="slide">
+      <div class="slide-content">
+        <h2>Регистрация</h2>
+        <form id="register-form">
+          <div class="form-group">
+            <label for="firstName">Имя</label>
+            <input type="text" id="firstName" name="firstName" required>
+          </div>
+          <div class="form-group">
+            <label for="lastName">Фамилия</label>
+            <input type="text" id="lastName" name="lastName" required>
+          </div>
+          <div class="form-group">
+            <label for="course">Курс</label>
+            <select id="course" name="course" required>
+              <option value="" disabled selected>Выбери курс</option>
+              <option value="1">1 курс</option>
+              <option value="2">2 курс</option>
+              <option value="3">3 курс</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="group">Группа</label>
+            <select id="group" name="group" required>
+              <option value="" disabled selected>Сначала выбери курс</option>
+            </select>
+          </div>
+          <button type="submit" class="start-btn full-btn">Завершить</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Точки -->
+    <div class="dots-container">
+      <span class="dot active"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+
+    <!-- Единая кнопка -->
+    <button id="bottom-btn" class="next-btn">Далее</button>
+  </div>
+
+  <script src="/html-static/welcome.js"></script>
+</body>
+</html>

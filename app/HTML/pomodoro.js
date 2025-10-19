@@ -32,7 +32,10 @@ function setMode(newMode) {
   let mins = getMinutesForMode();
   total = remaining = mins * 60;
   timeEl.textContent = formatTime(remaining);
-  sessionLabel.textContent = (mode === 'work') ? `Сессия ${sessionCount + 1}` : (mode === 'short' ? 'Короткий перерыв' : 'Длинный перерыв');
+  sessionLabel.textContent =
+    mode === 'work' ? `Сессия ${sessionCount + 1}` :
+    mode === 'short' ? 'Короткий перерыв' :
+    'Длинный перерыв';
   updateProgress();
 }
 
@@ -54,7 +57,7 @@ modeBtns.forEach(b => {
 
 function updateProgress() {
   const pct = total ? ((total - remaining) / total) * 360 : 0;
-  progressEl.style.background = `conic-gradient(var(--accent) ${pct}deg, #e6edf6 ${pct}deg)`;
+  progressEl.style.background = `conic-gradient(var(--accent) ${pct}deg, #1f1f1f ${pct}deg)`;
 }
 
 function tick() {
@@ -64,11 +67,8 @@ function tick() {
     if (mode === 'work') {
       sessionCount += 1;
       const cycles = parseInt(cyclesInput.value) || 4;
-      if (sessionCount % cycles === 0) {
-        setMode('long');
-      } else {
-        setMode('short');
-      }
+      if (sessionCount % cycles === 0) setMode('long');
+      else setMode('short');
     } else {
       setMode('work');
     }
@@ -109,9 +109,7 @@ startBtn.addEventListener('click', () => {
   startTimer();
 });
 
-pauseBtn.addEventListener('click', () => {
-  pauseTimer();
-});
+pauseBtn.addEventListener('click', pauseTimer);
 
 resetBtn.addEventListener('click', () => {
   stopTimer();
@@ -128,6 +126,15 @@ resetBtn.addEventListener('click', () => {
     }
   });
 });
+
+/* — исправление: функция теперь глобальна — */
+window.changeValue = function(id, delta) {
+  const el = document.getElementById(id);
+  let val = parseInt(el.value) || 0;
+  val = Math.min(Math.max(val + delta, parseInt(el.min) || 0), parseInt(el.max) || 999);
+  el.value = val;
+  el.dispatchEvent(new Event('change'));
+};
 
 if ('Notification' in window && Notification.permission === 'default') {
   try {

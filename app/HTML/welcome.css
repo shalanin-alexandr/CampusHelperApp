@@ -1,0 +1,268 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background: radial-gradient(circle at top, #1e1e1e 0%, #0d0d0d 100%);
+  color: #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+#app {
+  width: 100%;
+  max-width: 500px;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Слайды */
+.slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: transform 0.45s ease, opacity 0.45s ease;
+  padding: 2rem 1.5rem 6rem;
+}
+
+.slide.active {
+  opacity: 1;
+  transform: translateX(0);
+  z-index: 2;
+}
+
+/* Содержимое слайдов */
+.slide-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 90%;
+  margin: 0 auto;
+  opacity: 0;
+  transform: translateX(30px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.slide.active .slide-content {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Иконки и заголовки */
+.mascot-container {
+  width: 300px;
+  height: 300px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255,255,255,0.05);
+  border-radius: 50%;
+  box-shadow: 0 0 30px rgba(0,0,0,0.3);
+}
+
+.app-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #fff;
+}
+
+.app-subtitle {
+  font-size: 1.1rem;
+  color: #b0b0b0;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.icon {
+  font-size: 5rem;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 0 15px rgba(255,255,255,0.2);
+}
+
+.slide h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+}
+
+.slide p {
+  font-size: 1.1rem;
+  color: #b5b5b5;
+  line-height: 1.5;
+  max-width: 90%;
+}
+
+/* Нижняя кнопка */
+#bottom-btn {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  right: 1.5rem;
+  background: linear-gradient(135deg, #1e88e5, #42a5f5);
+  color: #fff;
+  border: none;
+  padding: 1rem;
+  border-radius: 0.8rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(30,136,229,0.35);
+  transition: transform 0.2s, box-shadow 0.3s;
+  z-index: 20;
+}
+
+#bottom-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(30,136,229,0.6);
+}
+
+/* Точки */
+.dots-container {
+  position: fixed;
+  bottom: 6.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.6rem;
+  z-index: 10;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.4);
+  transition: background 0.3s, transform 0.3s;
+}
+
+.dot.active {
+  background: #fff;
+  transform: scale(1.25);
+}
+
+/* Форма */
+.form-group {
+  width: 100%;
+  text-align: left;
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #444;
+  border-radius: 0.6rem;
+  font-size: 1rem;
+  background: #1e1e1e;
+  color: #fff;
+}
+
+.full-btn {
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+/* Скрываем всё до загрузки */
+body:not(.loaded) #app {
+  visibility: hidden;
+}
+
+/* === ФОРМА РЕГИСТРАЦИИ (усовершенствовано) === */
+#register-form {
+  width: 100%;
+  max-width: 460px; /* шире */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4rem;
+  margin-top: 1rem;
+  padding: 0 1rem;
+}
+
+.form-group {
+  width: 100%;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  color: #e0e0e0;
+  font-size: 1.1rem;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 1.2rem; /* выше поля */
+  border: 1px solid #444;
+  border-radius: 0.8rem;
+  font-size: 1.15rem;
+  background: #1e1e1e;
+  color: #fff;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #1e88e5;
+  box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.25);
+}
+
+/* === КНОПКА "Завершить" === */
+#register-form button[type="submit"] {
+  width: 100%;
+  background: linear-gradient(135deg, #43a047, #66bb6a);
+  color: #fff;
+  border: none;
+  padding: 1.4rem; /* выше кнопка */
+  border-radius: 0.8rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(67, 160, 71, 0.35);
+  transition: transform 0.2s, box-shadow 0.3s;
+  margin-top: 1.5rem; /* опустил ниже */
+}
+
+#register-form button[type="submit"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(67, 160, 71, 0.6);
+}
+
+#register-form button[type="submit"]:active {
+  transform: translateY(1px);
+}

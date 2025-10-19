@@ -1,10 +1,22 @@
-/* 🌐 Общие стили */
+/* 🌑 Общие стили */
+:root {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #111111;
+  --bg-card: #1a1a1a;
+  --border: #333;
+  --text-primary: #ffffff;
+  --text-secondary: #888;
+  --accent: #007bff;
+  --top-border: rgba(255,255,255,0.04);
+  --safe-bottom: env(safe-area-inset-bottom);
+}
+
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
-  background-color: #f0f8ff;
-  color: #000;
+  font-family: "Inter", sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -15,7 +27,9 @@ body {
   display: none;
   flex: 1;
   flex-direction: column;
-  padding: 60px 20px 100px;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 70px 20px 100px;
   overflow-y: auto;
 }
 
@@ -23,73 +37,80 @@ body {
   display: flex;
 }
 
-
-
-
 /* 🔝 Верхний тулбар */
 .top-bar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 56px;
-  background-color: #ffffff;
-  border-bottom: 1px solid #ccc;
+  height: 58px;
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0 18px;
   z-index: 100;
   box-sizing: border-box;
 }
 
 .top-bar h1 {
-  font-size: 18px;
-  color: #007bff;
+  font-size: 19px;
+  color: #ffffff;
   margin: 0;
+  font-weight: 500;
 }
 
 .icon-button {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  transition: background-color 0.2s ease;
+}
+
+.icon-button:hover {
+  background-color: #2a2a2a;
 }
 
 .icon-button img {
   width: 26px;
   height: 26px;
   object-fit: contain;
+  filter: brightness(1.2);
 }
 
 /* 📋 Список заметок */
 .notes-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  align-items: center;
+  gap: 18px;
   width: 100%;
   max-width: 600px;
+  margin-top: 10px;
 }
 
 .note-tile {
   display: flex;
   align-items: flex-start;
-  background: #ffffff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  background: #1c1c1c;
+  padding: 22px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   position: relative;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, background 0.2s ease;
+  width: 100%;
 }
 
 .note-tile:hover {
-  transform: scale(1.01);
+  transform: translateY(-2px);
+  background: #252525;
 }
 
 .note-meta {
@@ -101,8 +122,8 @@ body {
 }
 
 .note-icon {
-  font-size: 32px;
-  margin-right: 16px;
+  font-size: 34px;
+  margin-right: 18px;
   flex-shrink: 0;
   line-height: 1;
 }
@@ -113,29 +134,29 @@ body {
 
 .note-content h3 {
   margin: 0 0 8px;
-  font-size: 20px;
-  color: #007bff;
+  font-size: 19px;
+  color: #7ab4ff;
+  font-weight: 600;
 }
 
 .note-content p {
   margin: 0;
-  font-size: 16px;
-  color: #333;
+  font-size: 15px;
+  color: #bfbfbf;
 }
 
 .empty-message {
   text-align: center;
   font-size: 16px;
-  color: #999;
-  margin-top: auto;
-  margin-bottom: auto;
+  color: #666;
+  margin-top: 100px;
 }
 
 /* 📝 Форма создания/редактирования */
 form#note-form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
   width: 100%;
   max-width: 600px;
 }
@@ -144,8 +165,10 @@ form#note-form {
 #note-text {
   padding: 12px;
   font-size: 16px;
-  border: 1px solid #ccc;
+  border: 1px solid #333;
   border-radius: 8px;
+  background-color: #1e1e1e;
+  color: #eaeaea;
   box-sizing: border-box;
 }
 
@@ -157,53 +180,16 @@ form#note-form {
 #save-note-btn {
   padding: 14px;
   font-size: 16px;
-  background-color: #007bff;
-  color: white;
+  background-color: #2e82ff;
+  color: #ffffff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
-/* 📱 Нижняя навигация */
-.bottom-nav {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 8px 0;
-  background-color: #ffffff;
-  border-top: 1px solid #e0e0e0;
-  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  z-index: 10;
-}
-
-.nav-item {
-  flex: 1;
-  min-width: 60px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  color: #000000;
-  font-size: 13px;
-  padding: 6px 0;
-  transition: all 0.2s ease;
-  position: relative;
-}
-
-.nav-item img {
-  width: 32px;
-  height: 32px;
-  margin-bottom: 4px;
-}
-
-.nav-item.active {
-  background-color: #e6f0ff;
-  border-radius: 12px;
-  color: #007bff;
+#save-note-btn:hover {
+  background-color: #1765d1;
 }
 
 /* 🎯 Выбор иконки */
@@ -218,7 +204,7 @@ form#note-form {
 #icon-toggle-btn {
   padding: 12px 16px;
   font-size: 15px;
-  background-color: #007bff;
+  background-color: #2e82ff;
   color: #ffffff;
   border: none;
   border-radius: 8px;
@@ -227,7 +213,7 @@ form#note-form {
 }
 
 #icon-toggle-btn:hover {
-  background-color: #005fcc;
+  background-color: #1765d1;
 }
 
 .icon-options {
@@ -248,47 +234,101 @@ form#note-form {
 }
 
 .icon-choice {
-  font-size: 26px;
+  font-size: 28px;
   padding: 8px;
-  border: 2px solid #ccc;
+  border: 2px solid #333;
   border-radius: 10px;
-  background-color: #fff;
+  background-color: #1e1e1e;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .icon-choice:hover {
-  background-color: #f0f8ff;
+  background-color: #2a2a2a;
 }
 
 .icon-choice.selected {
-  border-color: #007bff;
-  background-color: #e6f0ff;
+  border-color: #2e82ff;
+  background-color: #263d5c;
 }
 
+/* 📖 Просмотр заметки */
 .note-view {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 16px;
   padding: 20px;
   width: 100%;
   max-width: 600px;
+  text-align: center;
 }
 
 .note-icon-large {
-  font-size: 48px;
+  font-size: 56px;
   text-align: center;
 }
 
 #read-note-title {
   font-size: 22px;
-  color: #007bff;
+  color: #7ab4ff;
   margin: 0;
-  text-align: center;
 }
 
 #read-note-text {
   font-size: 16px;
-  color: #333;
+  color: #ccc;
   white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+/* 📱 Нижняя навигация (обновлённая) */
+.bottom-nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 8px 0;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -6px 18px rgba(0,0,0,0.6);
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 10;
+  height: calc(56px + var(--safe-bottom));
+}
+
+.nav-item {
+  flex: 1;
+  min-width: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--text-primary);
+  font-size: 13px;
+  padding: 6px 0;
+  transition: all 0.2s ease;
+  position: relative;
+  border-radius: 8px;
+}
+
+.nav-item img {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 4px;
+  filter: brightness(1.1);
+}
+
+.nav-item.active {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  border-radius: 12px;
+  color: var(--accent);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+}
+
+.nav-item:hover {
+  color: #ffffff;
+  transform: translateY(-2px);
 }

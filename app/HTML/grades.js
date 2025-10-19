@@ -19,6 +19,19 @@ const gradeColors = {
   10: "#3b82f6"
 };
 
+const gradeEmojis = {
+  1: "💀",
+  2: "😬",
+  3: "😕",
+  4: "😐",
+  5: "🙂",
+  6: "😊",
+  7: "😁",
+  8: "😎",
+  9: "🔥",
+  10: "🏆"
+};
+
 let grades = [];
 
 function updateAverage() {
@@ -51,7 +64,7 @@ function renderGrades() {
     gradesList.appendChild(emptyState);
     return;
   }
-  [...grades].reverse().forEach((grade, index) => {
+  [...grades].reverse().forEach((grade) => {
     const tag = document.createElement("div");
     tag.className = "grade-tag";
     tag.textContent = grade;
@@ -69,11 +82,43 @@ function renderGrades() {
   gradesList.parentElement.scrollLeft = 0;
 }
 
+function showEmoji(grade) {
+  const emoji = gradeEmojis[grade];
+  if (!emoji) return;
+
+  const el = document.createElement("div");
+  el.textContent = emoji;
+  el.style.position = "fixed";
+  el.style.left = "50%";
+  el.style.top = "50%";
+  el.style.transform = "translate(-50%, -50%) scale(0.8)";
+  el.style.fontSize = "48px";
+  el.style.opacity = "0";
+  el.style.transition = "all 0.6s ease";
+  el.style.pointerEvents = "none";
+  el.style.zIndex = "100";
+
+  document.body.appendChild(el);
+
+  requestAnimationFrame(() => {
+    el.style.opacity = "1";
+    el.style.transform = "translate(-50%, -50%) scale(1.2)";
+  });
+
+  setTimeout(() => {
+    el.style.opacity = "0";
+    el.style.transform = "translate(-50%, -60%) scale(0.8)";
+  }, 400);
+
+  setTimeout(() => el.remove(), 1000);
+}
+
 function addGrade(grade) {
   grades.push(grade);
   updateAverage();
   updateGradesCount();
   renderGrades();
+  showEmoji(grade);
 }
 
 // create buttons 1..10 inside grid
@@ -84,10 +129,25 @@ for (let i = 1; i <= 10; i++) {
   btn.textContent = i;
   btn.setAttribute("aria-label", `Оценка ${i}`);
   btn.style.borderColor = gradeColors[i];
+
+  let cooldown = false;
   btn.addEventListener("click", () => {
-    btn.animate([{ transform: "translateY(0)" }, { transform: "translateY(-4px)" }, { transform: "translateY(0)" }], { duration: 160 });
+    if (cooldown) return;
+    cooldown = true;
+    setTimeout(() => (cooldown = false), 150);
+
+    btn.animate(
+      [
+        { transform: "translateY(0)" },
+        { transform: "translateY(-4px)" },
+        { transform: "translateY(0)" }
+      ],
+      { duration: 160 }
+    );
+
     addGrade(i);
   });
+
   gradeButtons.appendChild(btn);
 }
 
@@ -112,14 +172,12 @@ clearBtn.addEventListener("click", () => {
   }
 });
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   updateAverage();
   updateGradesCount();
   renderGrades();
 });
 
-// Optional: if window tallness changes, ensure buttons grid reflows to fit
-window.addEventListener('resize', () => {
-  // keep grades list scrolled to start and ensure layout recalculation
+window.addEventListener("resize", () => {
   if (grades.length > 0) gradesList.parentElement.scrollLeft = 0;
 });

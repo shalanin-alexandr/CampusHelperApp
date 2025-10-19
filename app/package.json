@@ -1,0 +1,14 @@
+{
+  "name": "campus-helper",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "sqlite": "^5.1.6",
+    "sqlite3": "^5.1.7"
+  }
+}

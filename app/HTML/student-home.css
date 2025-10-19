@@ -183,3 +183,148 @@ body {
   .icon-button img { width: 22px !important; height: 22px !important; }
   .main-content h1 { font-size: 20px; }
 }
+
+/* Всплывающее окно настроек */
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  backdrop-filter: blur(6px);
+}
+
+.settings-overlay.active {
+  display: flex;
+}
+
+.settings-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0,0,0,0.5);
+  width: 90%;
+  max-width: 360px;
+}
+
+.settings-card h2 {
+  margin-bottom: 16px;
+  color: var(--accent);
+}
+
+.social-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.social-btn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #fff;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.social-btn.email { background: #0077ff; }
+.social-btn.github { background: #333; }
+.social-btn.telegram { background: #2aabee; }
+
+.social-btn:hover { opacity: 0.85; }
+
+.close-btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.close-btn:hover {
+  background: var(--bg-card);
+}
+
+/* 🌌 Всплывающее окно настроек */
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  backdrop-filter: blur(6px);
+}
+
+.settings-overlay.active {
+  display: flex;
+}
+
+.settings-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px 20px;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(0,0,0,0.6);
+  width: 95%;
+  max-width: 420px;
+  height: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
+}
+
+.settings-card h2 {
+  color: var(--accent);
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+/* 🪩 Соцсети — без фона, просто логотипы */
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 36px;
+  margin-top: 20px;
+}
+
+.social-icon img {
+  width: 42px;
+  height: 42px;
+  opacity: 0.85;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.social-icon img:hover {
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+/* 🚪 Кнопка закрытия — синяя, в фирменном стиле */
+.close-btn {
+  background: #007bff;
+  border: none;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.close-btn:hover {
+  background: #0069d9;
+  transform: scale(1.05);
+}
+
