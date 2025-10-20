@@ -93,6 +93,8 @@ body {
   width: 100%;
   max-width: 600px;
   margin-top: 10px;
+  padding: 0 16px;
+  box-sizing: border-box;
 }
 
 .note-tile {
@@ -104,13 +106,14 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   position: relative;
   cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
   width: 100%;
 }
 
 .note-tile:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   background: #252525;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
 }
 
 .note-meta {
@@ -190,6 +193,21 @@ form#note-form {
 
 #save-note-btn:hover {
   background-color: #1765d1;
+}
+
+.delete-btn {
+  padding: 14px;
+  font-size: 16px;
+  background-color: #ff3b30;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.delete-btn:hover {
+  background-color: #e02b21;
 }
 
 /* 🎯 Выбор иконки */
@@ -280,9 +298,11 @@ form#note-form {
   color: #ccc;
   white-space: pre-wrap;
   line-height: 1.5;
+  text-align: left;
+  width: 100%;
 }
 
-/* 📱 Нижняя навигация (обновлённая) */
+/* 📱 Нижняя навигация */
 .bottom-nav {
   display: flex;
   justify-content: space-around;

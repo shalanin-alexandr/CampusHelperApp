@@ -1,4 +1,3 @@
-# schedule_merger.py
 from excel_scraper import get_excel_schedule, split_time_interval
 import doc_scraper as ds
 from doc_scraper import (
@@ -226,11 +225,12 @@ def merge_schedules(excel_data, doc_data):
 
     return merged
 
+
 # ------------------ main (тестовый блок) ------------------
 if __name__ == '__main__':
     EXCEL_URL = "http://www.bobruisk.belstu.by/uploads/b1/s/8/648/basic/117/614/Raspisanie_uchebnyih_zanyatiy_na_2025-2026_uch.god_1_semestr.xlsx?t=1756801696"
     DOC_PAGE_URL = "http://www.bobruisk.belstu.by/dnevnoe-otdelenie/raspisanie-zanyatiy-i-zvonkov-zamenyi"
-    MY_GROUP = "РС02-24"
+    MY_GROUP = "РС02-23"
 
     # Получаем Excel-расписание
     excel_schedule = get_excel_schedule(EXCEL_URL, MY_GROUP)
@@ -256,7 +256,7 @@ if __name__ == '__main__':
                 with open(cache_path, "r", encoding="utf-8") as f:
                     last_url = f.read().strip()
                 if last_url:
-                    print("⚠️ fetch_latest_docx_url вернул None — пытаюсь загрузить из кэша:", last_url)
+                    print("⚠️ fetch_latest_docx_url вернул None — пытаюсь загрузить из кэше:", last_url)
                     try:
                         doc = ds.load_docx_from_url(last_url)
                         temp_doc_schedule = get_docx_schedule_from_doc(doc, MY_GROUP)
